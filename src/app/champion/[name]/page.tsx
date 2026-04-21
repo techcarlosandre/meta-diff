@@ -43,6 +43,10 @@ export default function ChampionPage() {
    const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
    const [matchupResult, setMatchupResult] = useState<{ winRate: string, difficulty: string, advice: string } | null>(null);
 
+   const [user, setUser] = useState<any>(null);
+   const [isFavorite, setIsFavorite] = useState(false);
+   const [favLoading, setFavLoading] = useState(false);
+
    const formatRate = (val: any) => {
       if (val === undefined || val === null) return '00,00';
       const num = typeof val === 'string' ? parseFloat(val.replace(',', '.').replace('%', '')) : val;
@@ -120,6 +124,56 @@ export default function ChampionPage() {
       fetchData();
    }, [champId]);
 
+   // Gerenciar estado de Favorito
+   useEffect(() => {
+      supabase.auth.getUser().then(({ data: { user } }) => {
+         setUser(user);
+         if (user) {
+            console.log("Usuário detectado:", user.email);
+            supabase
+               .from('favorites')
+               .select('id')
+               .eq('user_id', user.id)
+               .eq('champion_id', champId)
+               .maybeSingle()
+               .then(({ data, error }) => {
+                  if (error) console.warn("Tabela de favoritos não disponível.");
+                  setIsFavorite(!!data);
+               });
+         }
+      });
+   }, [champId]);
+
+   const toggleFavorite = async () => {
+      if (!user || favLoading) return;
+      setFavLoading(true);
+
+      try {
+         if (isFavorite) {
+            const { error } = await supabase
+               .from('favorites')
+               .delete()
+               .eq('user_id', user.id)
+               .eq('champion_id', champId);
+            
+            if (error) throw error;
+            setIsFavorite(false);
+         } else {
+            const { error } = await supabase
+               .from('favorites')
+               .insert([{ user_id: user.id, champion_id: champId }]);
+            
+            if (error) throw error;
+            setIsFavorite(true);
+         }
+      } catch (err: any) {
+         console.error("ERRO CRÍTICO NO BANCO:", err.message);
+         alert("Erro ao salvar favorito. Verifique se a tabela 'favorites' foi criada no Supabase.");
+      } finally {
+         setFavLoading(false);
+      }
+   };
+
    const getTierColor = (tier: string) => {
       switch (tier) {
          case 'S+': return 'bg-primary text-void shadow-[0_0_50px_rgba(0,255,242,0.15)]';
@@ -169,6 +223,8 @@ export default function ChampionPage() {
    };
 
    const renderRuneGrid = (treeKey: string, selections: number[], isSecondary = false) => {
+      if (!Array.isArray(runesData)) return <div className="h-64 flex items-center justify-center text-white/10 uppercase font-black tracking-widest text-[10px]">Mapeando Sistema Neural...</div>;
+      
       const tree = runesData.find(t => t.key === treeKey);
       if (!tree) return <div className="h-64 flex items-center justify-center text-white/10 uppercase font-black tracking-widest text-[10px]">Analizando Runas...</div>;
       return (
@@ -245,9 +301,25 @@ export default function ChampionPage() {
                       <div className="h-0.5 w-12 bg-primary"></div>
                       <span className="text-primary font-black uppercase tracking-[0.8em] text-[10px] drop-shadow-glow">Protocolo Meta-Diff Ativo</span>
                    </div>
-                  <h1 className="text-[clamp(4rem,12vw,12rem)] font-black text-white tracking-tighter leading-[0.8] italic mb-10 outline-text group-hover:text-white transition-colors duration-700">
-                     {formatDisplayName(champion.id)}
-                  </h1>
+                  <div className="flex items-center gap-6 mb-10">
+                    <h1 className="text-[clamp(4rem,12vw,10rem)] font-black text-white tracking-tighter leading-[0.8] italic outline-text group-hover:text-white transition-colors duration-700">
+                       {formatDisplayName(champion.id)}
+                    </h1>
+                    
+                    {user && (
+                       <button 
+                        onClick={toggleFavorite}
+                        disabled={favLoading}
+                        className={`group/fav relative p-5 rounded-[2rem] border transition-all duration-500 hover:scale-110 active:scale-95 ${isFavorite ? 'bg-secondary border-secondary shadow-[0_0_30px_rgba(255,174,0,0.4)]' : 'bg-white/5 border-white/10 hover:border-secondary/50'}`}
+                       >
+                          <Star className={`w-8 h-8 transition-all duration-500 ${isFavorite ? 'text-void fill-void' : 'text-muted group-hover/fav:text-secondary'} ${favLoading ? 'animate-pulse opacity-50' : ''}`} />
+                          
+                          {!isFavorite && (
+                             <div className="absolute -inset-1 bg-secondary/20 blur-xl rounded-full opacity-0 group-hover/fav:opacity-100 transition-opacity"></div>
+                          )}
+                       </button>
+                    )}
+                  </div>
                   <div className="flex gap-4">
                      {champion.tags.map(t => (
                         <span key={t} className="px-8 py-3 bg-white/5 border border-white/10 backdrop-blur-3xl rounded-full text-[10px] font-black text-white/50 hover:text-primary hover:border-primary/50 transition-all uppercase tracking-[0.3em] cursor-default">
@@ -823,8 +895,8 @@ export default function ChampionPage() {
                               <div className="relative group/rune-main cursor-pointer">
                                  <div className="absolute -inset-10 bg-primary/20 blur-[60px] rounded-full animate-pulse transition-all"></div>
                                  <div className="relative w-24 h-24 rounded-full bg-void/90 flex items-center justify-center border-2 border-primary/40 shadow-glow transform-gpu group-hover/rune-main:scale-110 transition-all duration-700">
-                                    {buildData?.runes && runesData.find(t => t.key === buildData?.runes.primaryTree) && (
-                                       <img src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find(t => t.key === buildData?.runes.primaryTree).icon}`} className="w-16 h-16 object-contain z-10 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" />
+                                    {buildData?.runes && Array.isArray(runesData) && runesData.find((t: any) => t.key === buildData?.runes.primaryTree) && (
+                                       <img src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find((t: any) => t.key === buildData?.runes.primaryTree).icon}`} className="w-16 h-16 object-contain z-10 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" />
                                     )}
                                     <div className="absolute inset-0 scanline-effect rounded-full opacity-20"></div>
                                  </div>
@@ -847,8 +919,8 @@ export default function ChampionPage() {
                               <div className="relative group/rune-sec cursor-pointer">
                                  <div className="absolute -inset-8 bg-secondary/20 blur-[50px] rounded-full opacity-50"></div>
                                  <div className="relative w-20 h-20 rounded-full bg-void/90 flex items-center justify-center border-2 border-secondary/30 shadow-glow-amber transform-gpu group-hover/rune-sec:scale-110 transition-all duration-700">
-                                    {buildData?.runes && runesData.find(t => t.key === buildData?.runes.secondaryTree) && (
-                                       <img src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find(t => t.key === buildData?.runes.secondaryTree).icon}`} className="w-12 h-12 object-contain z-10" />
+                                    {buildData?.runes && Array.isArray(runesData) && runesData.find((t: any) => t.key === buildData?.runes.secondaryTree) && (
+                                       <img src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find((t: any) => t.key === buildData?.runes.secondaryTree).icon}`} className="w-12 h-12 object-contain z-10" />
                                     )}
                                  </div>
                               </div>

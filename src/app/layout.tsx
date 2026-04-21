@@ -4,6 +4,8 @@ import "./globals.css";
 import Link from "next/link";
 import BackgroundParticles from "@/components/BackgroundParticles";
 
+import UserNav from "@/components/UserNav";
+
 const montserrat = Montserrat({ subsets: ["latin"], weight: ['400', '700', '900'] });
 
 export const metadata: Metadata = {
@@ -38,7 +40,6 @@ export default function RootLayout({
               {[
                 { name: 'Tier List', href: '/tier-list' },
                 { name: 'Início', href: '/' },
-                { name: 'Entrar', href: '/login' }
               ].map((item) => (
                 <Link
                   key={item.name}
@@ -48,6 +49,7 @@ export default function RootLayout({
                   {item.name}
                 </Link>
               ))}
+              <UserNav />
             </div>
           </nav>
         </header>

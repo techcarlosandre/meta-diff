@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, User, X, ChevronRight, Target } from 'lucide-react';
+import Link from 'next/link';
+import { Search, User, X, ChevronRight, Target, Star } from 'lucide-react';
 import { supabase } from '@/utils/supabase';
 
 // Cache estático para evitar re-download na navegação
@@ -29,8 +30,102 @@ const DEFAULT_HIGHLIGHTS: Highlight[] = [
 
 export default function Home() {
   const router = useRouter();
-  const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [searchValue, setSearchValue] = useState('');
+  const [favChamps, setFavChamps] = useState<any[]>([]);
+  const [favSummoners, setFavSummoners] = useState<any[]>([]);
+  const [dailyLeaders, setDailyLeaders] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
+  const [loadingFavs, setLoadingFavs] = useState(true);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+
+        if (user) {
+          console.log("Buscando favoritos para:", user.email);
+          
+          // Buscar Campeões Favoritos
+          const { data: champs, error: cErr } = await supabase
+            .from('favorites')
+            .select('champion_id')
+            .eq('user_id', user.id);
+          
+          if (cErr) console.warn("Tabela de favoritos não encontrada. Ignore se não for usar favoritos.");
+          setFavChamps(champs || []);
+
+          // Buscar Invocadores Favoritos
+          const { data: summoners, error: sErr } = await supabase
+            .from('favorite_summoners')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          if (sErr) console.warn("Tabela de invocadores favoritos não encontrada.");
+          setFavSummoners(summoners || []);
+
+          // Buscar Líderes Diários
+          const { data: leaders } = await supabase
+            .from('daily_leaders')
+            .select('*')
+            .order('rank', { ascending: true })
+            .limit(5);
+          
+          if (leaders) setDailyLeaders(leaders);
+        } else {
+           // Mesmo deslogado, busca os líderes para mostrar na home
+           const { data: leaders } = await supabase
+            .from('daily_leaders')
+            .select('*')
+            .order('rank', { ascending: true })
+            .limit(5);
+          
+          if (leaders) setDailyLeaders(leaders);
+        }
+      } catch (err) {
+        console.error("Erro na carga de favoritos:", err);
+      } finally {
+        setLoadingFavs(false);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
+  const toggleSummonerFavorite = async (e: React.MouseEvent, summoner: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return;
+
+    const [name, tag] = summoner.split('#');
+    if (!name || !tag) return;
+
+    const isFav = favSummoners.some(s => s.summoner_name === name && s.tag_line === tag);
+
+    try {
+      if (isFav) {
+        await supabase
+          .from('favorite_summoners')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('summoner_name', name)
+          .eq('tag_line', tag);
+        
+        setFavSummoners(prev => prev.filter(s => !(s.summoner_name === name && s.tag_line === tag)));
+      } else {
+        const { data, error } = await supabase
+          .from('favorite_summoners')
+          .insert([{ user_id: user.id, summoner_name: name, tag_line: tag }])
+          .select();
+        
+        if (error) throw error;
+        if (data) setFavSummoners(prev => [...prev, data[0]]);
+      }
+    } catch (err) {
+      console.error("Erro ao favoritar invocador:", err);
+    }
+  };
+  const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [allChamps, setAllChamps] = useState<Champion[]>([]);
   const [filteredChamps, setFilteredChamps] = useState<Champion[]>([]);
   const [metaInfo, setMetaInfo] = useState<any[]>([]);
@@ -99,9 +194,6 @@ export default function Home() {
 
     const formattedName = searchName.trim().replace('#', '-');
     router.push(`/summoner/${formattedName}`);
-    if (!manualName) {
-      saveHighlights([...highlights.filter(h => h.name !== searchName), { name: searchName.trim(), label: searchName.split('#')[0] }].slice(-5));
-    }
   };
 
   return (
@@ -160,6 +252,14 @@ export default function Home() {
                       <div className="text-[10px] font-black text-primary uppercase tracking-widest">Busca Global</div>
                       <div className="text-base font-black text-white">{searchValue}</div>
                     </div>
+                    {user && searchValue.includes('#') && (
+                      <button 
+                        onClick={(e) => toggleSummonerFavorite(e, searchValue)}
+                        className={`p-3 rounded-xl border transition-all ${favSummoners.some(s => s.summoner_name === searchValue.split('#')[0] && s.tag_line === searchValue.split('#')[1]) ? 'bg-secondary/20 border-secondary text-secondary' : 'bg-white/5 border-white/10 text-muted hover:border-secondary hover:text-secondary'}`}
+                      >
+                        <Star className={`w-4 h-4 ${favSummoners.some(s => s.summoner_name === searchValue.split('#')[0] && s.tag_line === searchValue.split('#')[1]) ? 'fill-secondary' : ''}`} />
+                      </button>
+                    )}
                     <ChevronRight className="w-5 h-5 text-primary opacity-0 group-hover/sum:opacity-100 transition-all" />
                   </button>
                 )}
@@ -186,26 +286,118 @@ export default function Home() {
           </form>
         </div>
 
+        {/* SEÇÃO: SUA ELITE (Favoritos) */}
+        {user && (favChamps.length > 0 || favSummoners.length > 0) && (
+          <div className="mt-20 w-full max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-10 duration-1000">
+            <div className="flex items-center gap-4 mb-10 justify-center">
+              <Star className="w-5 h-5 text-secondary fill-secondary animate-pulse" />
+              <h3 className="text-[11px] font-black text-white uppercase tracking-[0.5em] opacity-60">Sua Elite Pessoal</h3>
+              <div className="h-[1px] w-24 bg-gradient-to-r from-white/10 to-transparent hidden sm:block"></div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Campeões Favoritos */}
+              <div className="nova-glass-light border border-white/5 rounded-[2rem] p-8 flex flex-col gap-6 group/favc hover:border-primary/20 transition-all">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Campeões Prioritários</p>
+                  <div className="w-2 h-2 bg-primary animate-ping rounded-full shadow-glow"></div>
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  {favChamps.length > 0 ? favChamps.map((fav) => (
+                    <Link 
+                      key={fav.champion_id}
+                      href={`/champion/${fav.champion_id}`}
+                      className="group relative w-16 h-16 rounded-2xl overflow-hidden border border-white/10 hover:border-primary transition-all duration-500 hover:scale-110 shadow-xl"
+                    >
+                      <img 
+                        src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${fav.champion_id}.png`}
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                        alt={fav.champion_id}
+                      />
+                      <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </Link>
+                  )) : (
+                    <div className="flex flex-col gap-2 opacity-20">
+                      <div className="flex gap-2">
+                        {[1,2,3].map(i => <div key={i} className="w-12 h-12 bg-white/5 rounded-xl border border-dashed border-white/20" />)}
+                      </div>
+                      <p className="text-[8px] font-bold uppercase tracking-widest">Nenhum campeão no radar</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Invocadores Favoritos */}
+              <div className="nova-glass-light border border-white/5 rounded-[2rem] p-8 flex flex-col gap-6 group/favs hover:border-secondary/20 transition-all">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] font-black text-secondary uppercase tracking-[0.4em]">Invocadores Favoritos</p>
+                  <Star className="w-3 h-3 text-secondary/40" />
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {favSummoners.length > 0 ? favSummoners.map((s) => (
+                    <Link 
+                      key={s.id}
+                      href={`/summoner/${s.summoner_name}-${s.tag_line}`}
+                      className="flex items-center gap-4 px-5 py-4 bg-white/5 border border-white/10 rounded-2xl hover:border-secondary hover:bg-white/10 transition-all group/s shadow-lg"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center border border-secondary/20 group-hover/s:border-secondary/50 transition-colors">
+                        <User className="w-5 h-5 text-secondary" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-black text-white group-hover/s:text-secondary transition-colors uppercase tracking-widest">
+                          {s.summoner_name}
+                        </span>
+                        <span className="text-[9px] font-bold text-white/20 uppercase tracking-tighter">#{s.tag_line}</span>
+                      </div>
+                    </Link>
+                  )) : (
+                    <div className="flex flex-col gap-2 opacity-20">
+                      <div className="flex gap-2">
+                         <div className="w-full h-12 bg-white/5 rounded-xl border border-dashed border-white/20 flex items-center px-4">
+                            <span className="text-[8px] font-bold uppercase tracking-widest">Lista de vigilância vazia</span>
+                         </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* HIGHLIGHTS / RECENTS */}
         <div className="mt-20">
-          <div className="text-[10px] font-black text-muted uppercase tracking-[0.4em] mb-8">Jogadores em Destaque</div>
+          <div className="text-[10px] font-black text-primary uppercase tracking-[0.6em] mb-10 flex items-center justify-center gap-4">
+            <div className="h-[1px] w-12 bg-primary/30"></div>
+            Líderes de Ontem (Winrate %)
+            <div className="h-[1px] w-12 bg-primary/30"></div>
+          </div>
           <div className="flex flex-wrap justify-center gap-4">
-            {highlights.map((p) => (
-              <div key={p.name} className="relative group/tag">
-                <button
-                  onClick={() => handleSearch(undefined, p.name)}
-                  className="nova-glass-light border border-white/5 py-3 px-6 rounded-full text-xs font-black text-muted hover:border-primary/50 hover:text-white transition-all pr-10 hover:shadow-[0_0_15px_rgba(0,255,204,0.1)]"
-                >
-                  {p.label}
-                </button>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); saveHighlights(highlights.filter(h => h.name !== p.name)); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover/tag:opacity-100 p-1 hover:text-red-400 transition-all"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
+            {(dailyLeaders.length > 0 ? dailyLeaders : DEFAULT_HIGHLIGHTS).map((p) => {
+              const summonerName = p.summoner_name || p.name.split('#')[0];
+              const tagLine = p.tag_line || p.name.split('#')[1];
+              const fullName = `${summonerName}#${tagLine}`;
+              const label = p.win_rate ? `${summonerName} (${p.win_rate} WR)` : (p.label || summonerName);
+
+              return (
+                <div key={fullName} className="relative group/tag">
+                  <button
+                    onClick={() => handleSearch(undefined, fullName)}
+                    className="nova-glass-light border border-white/5 py-3 px-6 rounded-full text-xs font-black text-muted hover:border-primary/50 hover:text-white transition-all pr-12 hover:shadow-[0_0_15px_rgba(0,255,204,0.1)] flex items-center gap-3"
+                  >
+                    {label}
+                    {user && (
+                      <div 
+                        onClick={(e) => toggleSummonerFavorite(e, fullName)}
+                        className={`p-1.5 rounded-lg transition-all ${favSummoners.some(s => s.summoner_name === summonerName && s.tag_line === tagLine) ? 'text-secondary' : 'text-white/10 hover:text-secondary'}`}
+                      >
+                        <Star className={`w-3 h-3 ${favSummoners.some(s => s.summoner_name === summonerName && s.tag_line === tagLine) ? 'fill-secondary' : ''}`} />
+                      </div>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

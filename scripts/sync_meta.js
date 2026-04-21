@@ -3,7 +3,6 @@ const { createClient } = require('@supabase/supabase-js');
 const cheerio = require('cheerio');
 const https = require('https');
 const fs = require('fs');
-const path = require('path');
 
 // Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -23,35 +22,18 @@ async function fetchPage(url) {
 }
 
 async function syncTierList() {
-    console.log('\x1b[36m%s\x1b[0m', '--- INICIANDO PROTOCOLO DE SINCRONIZAÇÃO NEURAL ---');
-    
+    console.log('\x1b[36m%s\x1b[0m', '--- [1/2] SINCRONIZANDO TIER LIST DE CAMPEÕES ---');
     try {
-        let html;
-        const localFile = 'tierlist.html';
-        
-        if (fs.existsSync(localFile)) {
-            console.log(`\x1b[33m%s\x1b[0m`, `USANDO ARQUIVO LOCAL: ${localFile}`);
-            html = fs.readFileSync(localFile, 'utf8');
-        } else {
-            console.log(`\x1b[33m%s\x1b[0m`, `TENTANDO BUSCA REMOTA...`);
-            html = await fetchPage('https://www.leagueofgraphs.com/champions/tier-list');
-        }
-
+        const html = await fetchPage('https://www.leagueofgraphs.com/champions/tier-list');
         const $ = cheerio.load(html);
         const champions = [];
         
-        // Tentar extrair do componente champions-component
         const itemsJson = $('champions-component').attr(':items');
-        
         if (itemsJson) {
-            console.log(`\x1b[32m%s\x1b[0m`, `DADOS ENCONTRADOS NO COMPONENTE VUE. PROCESSANDO...`);
             const items = JSON.parse(itemsJson);
-            
             items.forEach(item => {
                 let role = (item.role.name || 'MID').toUpperCase();
                 if (role === 'MIDDLE') role = 'MID';
-                if (role === 'SUPPORT') role = 'SUPPORT'; // Já está correto
-                
                 champions.push({
                     champion_name: item.championName,
                     role: role,
@@ -61,78 +43,59 @@ async function syncTierList() {
                     ban_rate: (item.banRate * 100) || 0
                 });
             });
-        } else {
-            console.log(`\x1b[33m%s\x1b[0m`, `COMPONENTE NÃO ENCONTRADO. TENTANDO FALLBACK PARA TABELA...`);
-            $('.data_table tbody tr').each((i, row) => {
-                const name = $(row).find('.championName').text().trim();
-                let role = $(row).find('.role').text().trim().toUpperCase();
-                if (role === 'MIDDLE') role = 'MID';
-                
-                const tierEl = $(row).find('.tier-S, .tier-A, .tier-B, .tier-C, .tier-D, .tier-S-plus');
-                const tier = tierEl.text().trim() || 'A';
-                
-                const winRateStr = $(row).find('.progressBarContainer.win_rate .progressBarValue').text().trim().replace('%', '');
-                const pickRateStr = $(row).find('.progressBarContainer.popularity .progressBarValue').text().trim().replace('%', '');
-                const banRateStr = $(row).find('.progressBarContainer.ban_rate .progressBarValue').text().trim().replace('%', '');
-                
-                if (name) {
-                    champions.push({
-                        champion_name: name,
-                        role: role || 'MID',
-                        tier_rank: tier,
-                        win_rate: parseFloat(winRateStr) || 0,
-                        pick_rate: parseFloat(pickRateStr) || 0,
-                        ban_rate: parseFloat(banRateStr) || 0
-                    });
-                }
-            });
         }
 
-
-        
-        if (champions.length === 0) {
-            console.log(`\x1b[31m%s\x1b[0m`, `AVISO: NENHUM CAMPEÃO ENCONTRADO. VERIFIQUE OS SELETORES HTML.`);
-            return;
-        }
-
-        console.log(`\x1b[32m%s\x1b[0m`, `ENCONTRADOS ${champions.length} REGISTROS. LIMPANDO TABELA...`);
-        
-        // Limpar tabela (estratégia clear and sync devido à falta de constraints)
-        const { error: deleteError } = await supabase
-            .from('route_meta')
-            .delete()
-            .neq('id', -1); // Deletar tudo
-            
-        if (deleteError) {
-            console.error(`\x1b[31m%s\x1b[0m`, `ERRO AO LIMPAR TABELA:`, deleteError.message);
-            return;
-        }
-
-        console.log(`\x1b[32m%s\x1b[0m`, `TABELA LIMPA. INICIANDO INSERÇÃO...`);
-        
-        // Split into chunks of 50 for safety
-        const chunkSize = 50;
-        for (let i = 0; i < champions.length; i += chunkSize) {
-            const chunk = champions.slice(i, i + chunkSize);
-            const { error } = await supabase
-                .from('route_meta')
-                .insert(chunk);
-            
-            if (error) {
-                console.error(`\x1b[31m%s\x1b[0m`, `ERRO NO CHUNK:`, error.message);
-            } else {
-                console.log(`\x1b[34m%s\x1b[0m`, `INSERIDO ${Math.min(i + chunkSize, champions.length)}/${champions.length}...`);
+        if (champions.length > 0) {
+            await supabase.from('route_meta').delete().neq('id', -1);
+            const chunkSize = 50;
+            for (let i = 0; i < champions.length; i += chunkSize) {
+                await supabase.from('route_meta').insert(champions.slice(i, i + chunkSize));
             }
+            console.log(`\x1b[32m%s\x1b[0m`, `CAMPEÕES ATUALIZADOS: ${champions.length}`);
         }
-        
-        console.log('\x1b[35m%s\x1b[0m', '--- SINCRONIZAÇÃO CONCLUÍDA: SISTEMA OPERACIONAL ---');
-        
     } catch (err) {
-        console.error('\x1b[31m%s\x1b[0m', 'FALHA CRÍTICA NO PROCESSO DE SINCRONIZAÇÃO:', err.message);
+        console.error('ERRO TIER LIST:', err.message);
     }
 }
 
+async function syncDailyLeaders() {
+    console.log('\x1b[36m%s\x1b[0m', '--- [2/2] BUSCANDO LÍDERES DE WINRATE (TOP 5) ---');
+    try {
+        const html = await fetchPage('https://www.leagueofgraphs.com/rankings/summoners/br');
+        const $ = cheerio.load(html);
+        const leaders = [];
 
+        $('table.data_table tr:not(.header)').each((i, row) => {
+            if (i >= 5) return;
+            const fullText = $(row).find('td:nth-child(2) .name span').text().trim();
+            const winRateCell = $(row).find('td:nth-child(3)').text().trim();
+            const [name, tag] = fullText.split('#');
+            const winRateMatch = winRateCell.match(/\((\d+\.?\d*)%\)/);
+            if (name && tag) {
+                leaders.push({
+                    summoner_name: name,
+                    tag_line: tag,
+                    win_rate: winRateMatch ? winRateMatch[1] + '%' : '??%',
+                    rank: (i + 1).toString()
+                });
+            }
+        });
 
-syncTierList();
+        if (leaders.length > 0) {
+            await supabase.from('daily_leaders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            await supabase.from('daily_leaders').insert(leaders);
+            console.log(`\x1b[32m%s\x1b[0m`, `LÍDERES ATUALIZADOS: ${leaders.length}`);
+        }
+    } catch (err) {
+        console.error('ERRO LÍDERES:', err.message);
+    }
+}
 
+async function runFullSync() {
+    console.log('\x1b[35m%s\x1b[0m', '=== INICIANDO ATUALIZAÇÃO DIÁRIA DO SISTEMA ===');
+    await syncTierList();
+    await syncDailyLeaders();
+    console.log('\x1b[35m%s\x1b[0m', '=== SISTEMA ATUALIZADO E OPERACIONAL ===');
+}
+
+runFullSync();
