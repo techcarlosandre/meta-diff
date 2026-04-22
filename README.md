@@ -62,6 +62,7 @@ O **Meta Diff** utiliza o que há de mais moderno no desenvolvimento web para ga
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/techcarlosandre/)
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/techcarlosandre)
+[![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/5521982665121)
 
 <div align="center">
   <p>© 2026 Meta Diff • Tecnologia para Gamers</p>
