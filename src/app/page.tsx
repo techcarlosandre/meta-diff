@@ -253,10 +253,6 @@ export default function Home() {
     }
   }, [searchValue, allChamps]);
 
-  const saveHighlights = (newHighlights: Highlight[]) => {
-    setHighlights(newHighlights);
-    localStorage.setItem('meta_highlights', JSON.stringify(newHighlights));
-  };
 
   const handleSearch = async (e?: React.FormEvent, manualName?: string) => {
     if (e) e.preventDefault();
