@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Meta Diff - Inteligência para o seu Meta
 
-## Getting Started
+<div align="center">
+  <img src="public/readme/logo.png" width="180px" alt="Meta Diff Logo" />
+  <p><h3>Estatísticas precisas, builds otimizadas e o meta do LoL em um único lugar.</h3></p>
 
-First, run the development server:
+  <br />
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+  <div align="center">
+    <a href="https://meta-diff.vercel.app" target="_blank">
+      <img src="https://img.shields.io/badge/ABRIR%20META%20DIFF-000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Project" height="45">
+    </a>
+  </div>
+  
+  <p><i>Acesse o projeto oficial e explore todas as funcionalidades em tempo real.</i></p>
+</div>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📸 Experiência de Análise Completa
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 📊 Dashboard Estratégico
+Acompanhe os principais indicadores de performance (KPIs) com uma interface visual limpa, moderna e focada em resultados rápidos.
+<div align="center">
+  <img src="public/readme/home.webp" width="98%" />
+</div>
 
-## Learn More
+<br />
 
-To learn more about Next.js, take a look at the following resources:
+### 🏆 Tier List & Champion Insights
+Rankings detalhados por lane, Win Rate, Pick Rate e Tier. Tudo o que você precisa para dominar a SoloQ.
+<div align="center">
+  <img src="public/readme/tierlist.png" width="48%" />
+  <img src="public/readme/champion.png" width="48%" />
+</div>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ✨ Diferenciais do Ecossistema
 
-## Deploy on Vercel
+- **Design Premium:** Interface moderna, intuitiva e totalmente responsiva para Mobile e Desktop.
+- **Dados em Tempo Real:** Sincronização constante com as melhores fontes de dados de League of Legends.
+- **Builds Otimizadas:** Protocolos ativos de builds, runas e ordens de habilidades baseados no meta atual.
+- **Segurança Robusta:** Autenticação e proteção de dados via Supabase.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠️ Stack Tecnológica
+
+O **Meta Diff** utiliza o que há de mais moderno no desenvolvimento web para garantir performance e escalabilidade:
+
+- **Frontend:** Next.js 16 (App Router)
+- **Backend & Auth:** Supabase
+- **Estilização:** Tailwind CSS v4 & Vanilla CSS
+- **Iconografia:** Lucide React
+
+---
+
+## 📧 Contato Comercial & Desenvolvedor
+
+**Carlos André** — *Especialista em Soluções SaaS*  
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/techcarlosandre/)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/techcarlosandre)
+
+<div align="center">
+  <p>© 2026 Meta Diff • Tecnologia para Gamers</p>
+</div>
