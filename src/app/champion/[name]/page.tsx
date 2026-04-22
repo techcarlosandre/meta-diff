@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { formatChampName, formatDisplayName } from '@/utils/riot';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase';
@@ -25,6 +25,7 @@ interface ChampionData {
 
 export default function ChampionPage() {
    const params = useParams();
+   const router = useRouter();
    const name = params?.name as string;
    const [champion, setChampion] = useState<ChampionData | null>(null);
    const [loading, setLoading] = useState(true);
@@ -39,6 +40,7 @@ export default function ChampionPage() {
    const [showMatchupList, setShowMatchupList] = useState(false);
    const [searchTerm, setSearchTerm] = useState('');
    const [showLaneList, setShowLaneList] = useState(false);
+   const [showMainList, setShowMainList] = useState(false);
    const [activeSkill, setActiveSkill] = useState<string>('P');
    const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
    const [matchupResult, setMatchupResult] = useState<{ winRate: string, difficulty: string, advice: string } | null>(null);
@@ -46,6 +48,27 @@ export default function ChampionPage() {
    const [user, setUser] = useState<any>(null);
    const [isFavorite, setIsFavorite] = useState(false);
    const [favLoading, setFavLoading] = useState(false);
+
+   
+   const getStatColor = (val: any, type: 'win' | 'pick' | 'ban') => {
+      if (val === undefined || val === null) return 'text-white/20';
+      const num = typeof val === 'string' ? parseFloat(val.replace(',', '.').replace('%', '')) : val;
+      if (isNaN(num)) return 'text-white/20';
+      
+      if (type === 'win') {
+         if (num >= 52) return 'text-emerald-400 text-glow-emerald';
+         if (num >= 50) return 'text-primary';
+         if (num >= 48) return 'text-amber-400';
+         return 'text-red-400';
+      }
+      if (type === 'ban') {
+         if (num >= 25) return 'text-red-500';
+         if (num >= 15) return 'text-amber-500';
+         if (num >= 5) return 'text-white';
+         return 'text-white/40';
+      }
+      return 'text-white';
+   };
 
    const formatRate = (val: any) => {
       if (val === undefined || val === null) return '00,00';
@@ -177,8 +200,8 @@ export default function ChampionPage() {
    const getTierColor = (tier: string) => {
       switch (tier) {
          case 'S+': return 'bg-primary text-void shadow-[0_0_50px_rgba(0,255,242,0.15)]';
-         case 'S': return 'bg-secondary text-void';
-         case 'A': return 'bg-emerald-500 text-void';
+         case 'S': return 'bg-secondary text-void shadow-[0_0_50px_rgba(255,184,0,0.2)]';
+         case 'A': return 'bg-emerald-500 text-void shadow-[0_0_50px_rgba(16,185,129,0.2)]';
          case 'B': return 'bg-sky-500 text-void';
          case 'C': return 'bg-yellow-500 text-void';
          case 'D': return 'bg-orange-500 text-white';
@@ -334,7 +357,7 @@ export default function ChampionPage() {
          <div className="max-w-[1500px] mx-auto px-8 -mt-24 relative z-30 space-y-12 animate-in fade-in slide-in-from-bottom-24 duration-[1000ms]">
             
             {opponent && (
-               <div className="nova-glass-light border border-primary/20 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 animate-nova-in shadow-[0_0_50px_rgba(0,255,204,0.1)] mb-12 relative overflow-hidden group/matchup">
+               <div className="glass-card border border-primary/20 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 animate-nova-in shadow-[0_0_50px_rgba(0,255,204,0.1)] mb-12 relative overflow-hidden group/matchup">
                   <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
                   <div className="flex items-center gap-6">
                      <div className="flex -space-x-6">
@@ -384,21 +407,21 @@ export default function ChampionPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 relative">
                {(
                   [
-                     { label: 'Probabilidade de Vitória', val: buildData?.winRate, color: 'text-primary', icon: TrendingUp },
+                     { label: 'Probabilidade de Vitória', val: buildData?.winRate, color: getStatColor(buildData?.winRate, 'win'), icon: TrendingUp },
                      { label: 'Frequência de Escolha', val: buildData?.pickRate, color: 'text-white', icon: Activity },
-                     { label: 'Contenção de Ameaças', val: buildData?.banRate, color: 'text-red-500', icon: Target },
+                     { label: 'Contenção de Ameaças', val: buildData?.banRate, color: getStatColor(buildData?.banRate, 'ban'), icon: Target },
                      { label: 'Tier Operacional', val: buildData?.tier || 'A', color: 'text-void', special: true }
                   ] as Array<{ label: string, val: any, color: string, icon?: any, special?: boolean }>
                ).map((s, i) => {
                   const Icon = s.icon;
                   return (
-                     <div key={i} className={`group relative glass-card scanline-effect p-8 rounded-[2rem] flex flex-col items-center justify-center transition-all hover:-translate-y-3 cursor-default overflow-hidden ${s.special ? getTierColor(s.val) : ''}`}>
+                     <div key={i} className={`group relative ${s.special ? getTierColor(s.val) : 'glass-card'} scanline-effect p-8 rounded-[2rem] flex flex-col items-center justify-center transition-all hover:-translate-y-3 cursor-default overflow-hidden`}>
                         {s.special ? (
                            <>
                               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
                               <span className="text-[11px] font-black uppercase tracking-[0.5em] mb-3 opacity-60">Status de Meta</span>
                               <span className="text-5xl font-display font-bold italic tracking-tighter uppercase drop-shadow-2xl">
-                                 {buildLoading || !s.val ? <div className="w-12 h-12 bg-white/10 animate-pulse rounded-lg"></div> : s.val}
+                                 {buildLoading || (s.val === undefined || s.val === null) ? <div className="w-12 h-12 bg-white/10 animate-pulse rounded-lg"></div> : s.val}
                               </span>
                            </>
                         ) : (
@@ -447,7 +470,7 @@ export default function ChampionPage() {
                      )}
 
                      <div className="flex items-center gap-10 relative z-20">
-                        <div className="relative group/portrait cursor-pointer">
+                        <div className="relative group/portrait cursor-pointer" onClick={() => setShowMainList(!showMainList)}>
                            <div className="absolute -inset-8 bg-primary/20 blur-[60px] rounded-full opacity-0 group-hover/portrait:opacity-100 transition-all duration-1000"></div>
                            <div className="relative w-28 h-28 rounded-[2rem] border-2 border-primary/40 overflow-hidden shadow-2xl group-hover/portrait:scale-110 group-hover/portrait:border-primary transition-all duration-700 transform-gpu">
                               <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champion.image.full}`} className="w-full h-full object-cover" />
@@ -477,8 +500,39 @@ export default function ChampionPage() {
                               <div className="absolute inset-0 bg-secondary/5 mix-blend-overlay"></div>
                            </button>
                            {opponent && (
-                              <div className="absolute -bottom-4 inset-x-0 flex justify-center">
-                                 <div className="px-6 py-1.5 bg-secondary text-void text-[10px] font-black uppercase tracking-widest rounded-full shadow-glow-amber">Rival</div>
+                              <>
+                                 <div className="absolute -bottom-4 inset-x-0 flex justify-center">
+                                    <div className="px-6 py-1.5 bg-secondary text-void text-[10px] font-black uppercase tracking-widest rounded-full shadow-glow-amber">Rival</div>
+                                 </div>
+                                 <button 
+                                    onClick={(e) => { e.stopPropagation(); setOpponent(null); }}
+                                    className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover/rival:opacity-100 transition-opacity z-50 hover:bg-red-600 shadow-lg"
+                                 >
+                                    <X className="w-4 h-4" />
+                                 </button>
+                              </>
+                           )}
+
+                           
+                           {showMainList && (
+                              <div className="absolute top-[130%] left-[-50%] w-[350px] glass-card rounded-[2rem] p-6 z-[999] shadow-[0_0_100px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-500 border-t-primary/30 h-max">
+                                 <div className="flex items-center gap-3 mb-6 bg-white/5 rounded-xl p-4 border border-white/5 focus-within:border-primary focus-within:bg-white/10 transition-all">
+                                    <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                                    <input
+                                       type="text"
+                                       placeholder="TROCAR CAMPEÃO..."
+                                       value={searchTerm}
+                                       onChange={e => setSearchTerm(e.target.value)}
+                                       className="bg-transparent border-none w-full text-xs text-white outline-none placeholder:text-white/10 font-bold uppercase tracking-widest"
+                                    />
+                                 </div>
+                                 <div className="grid grid-cols-4 gap-4 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {allChamps.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => (
+                                       <div key={c.id} onClick={() => { router.push(`/champion/${c.id}`); setShowMainList(false); }} className="relative group/box cursor-pointer aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all duration-500">
+                                          <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${c.image.full}`} className="w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" />
+                                       </div>
+                                    ))}
+                                 </div>
                               </div>
                            )}
 
@@ -495,6 +549,10 @@ export default function ChampionPage() {
                                     />
                                  </div>
                                  <div className="grid grid-cols-4 gap-4 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                                     <div onClick={() => { setOpponent(null); setShowMatchupList(false); }} className="relative group/box cursor-pointer aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-red-500 flex flex-col items-center justify-center bg-white/5 transition-all duration-500">
+                                        <X className="text-red-500/40 group-hover/box:text-red-500 w-6 h-6 transition-colors" />
+                                        <span className="text-[7px] font-black text-white/20 mt-1 uppercase">Remover</span>
+                                     </div>
                                     {allChamps.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => (
                                        <div key={c.id} onClick={() => { setOpponent(c); setShowMatchupList(false); }} className="relative group/box cursor-pointer aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all duration-500">
                                           <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${c.image.full}`} className="w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" />
@@ -603,10 +661,10 @@ export default function ChampionPage() {
                                   const cData = allChamps.find(c => c.name.replace(/[^a-zA-Z]/g, '') === cName.replace(/[^a-zA-Z]/g, '')) || allChamps[0];
                                   if (!cData) return null;
                                   return (
-                                     <div key={cName} className="relative w-16 h-16 rounded-xl overflow-hidden border border-red-500/30 group/counter hover:border-red-400 transition-all cursor-crosshair shadow-lg">
+                                     <Link key={cName} href={`/champion/${cData.id}`} className="relative w-16 h-16 rounded-xl overflow-hidden border border-red-500/30 group/counter hover:border-red-400 transition-all cursor-pointer shadow-lg block">
                                         <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${cData.image.full}`} className="w-full h-full object-cover grayscale opacity-60 group-hover/counter:grayscale-0 group-hover/counter:opacity-100 transition-all group-hover/counter:scale-110" />
                                         <div className="absolute inset-0 bg-red-500/20 mix-blend-overlay group-hover/counter:opacity-0 transition-all"></div>
-                                     </div>
+                                     </Link>
                                   );
                                })
                             )}
@@ -624,10 +682,10 @@ export default function ChampionPage() {
                                   const cData = allChamps.find(c => c.name.replace(/[^a-zA-Z]/g, '') === cName.replace(/[^a-zA-Z]/g, '')) || allChamps[0];
                                   if (!cData) return null;
                                   return (
-                                     <div key={cName} className="relative w-16 h-16 rounded-xl overflow-hidden border border-emerald-500/30 group/synergy hover:border-emerald-400 transition-all cursor-pointer shadow-lg">
+                                     <Link key={cName} href={`/champion/${cData.id}`} className="relative w-16 h-16 rounded-xl overflow-hidden border border-emerald-500/30 group/synergy hover:border-emerald-400 transition-all cursor-pointer shadow-lg block">
                                         <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${cData.image.full}`} className="w-full h-full object-cover grayscale opacity-60 group-hover/synergy:grayscale-0 group-hover/synergy:opacity-100 transition-all group-hover/synergy:scale-110" />
                                         <div className="absolute inset-0 bg-emerald-500/20 mix-blend-overlay group-hover/synergy:opacity-0 transition-all"></div>
-                                     </div>
+                                     </Link>
                                   );
                                })
                             )}

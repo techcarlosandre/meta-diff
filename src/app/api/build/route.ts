@@ -335,6 +335,7 @@ export async function GET(req: NextRequest) {
       isOffRole: isOffRole,
       winRate: isOffRole ? "45.0%" : (dbEntry?.win_rate ? `${dbEntry.win_rate}%` : (specificBuild?.winRate || "50.5%")),
       pickRate: isOffRole ? "< 0.2%" : (dbEntry?.pick_rate ? `${dbEntry.pick_rate}%` : (specificBuild?.pickRate || "4.5%")),
+      banRate: isOffRole ? "0%" : (dbEntry?.ban_rate ? `${dbEntry.ban_rate}%` : (specificBuild?.banRate || "0%")),
       tier: isOffRole ? "F" : (dbEntry?.tier_rank || bestFit.tier || "B"),
       
       runes: specificBuild?.runes || bestFit.runes,

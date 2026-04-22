@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Trophy, TrendingUp, X, Star, Activity, Shield, Hash } from 'lucide-react';
 import { formatChampName, formatDisplayName } from '@/utils/riot';
+import { supabase } from '@/utils/supabase';
 
 export default function SummonerPage() {
   const params = useParams();
@@ -31,13 +32,20 @@ export default function SummonerPage() {
         setError(data.error || 'Identidade não encontrada.');
       } else {
         setSummoner(data);
-        const saved = localStorage.getItem('meta_highlights');
-        if (saved) {
-          const favorites = JSON.parse(saved);
-          const exists = favorites.some((f: any) => 
-            f.name.toLowerCase().trim() === data.name.toLowerCase().trim()
-          );
-          setIsFavorited(exists);
+        
+        // Check if favorited in Supabase
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const [name, tag] = data.name.split('#');
+          const { data: fav } = await supabase
+            .from('favorite_summoners')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('summoner_name', name.trim())
+            .eq('tag_line', tag.trim())
+            .single();
+          
+          setIsFavorited(!!fav);
         }
       }
     } catch (err) {
@@ -50,12 +58,6 @@ export default function SummonerPage() {
 
   useEffect(() => {
     if (!summonerName) return;
-    const saved = localStorage.getItem('meta_highlights');
-    if (saved) {
-      const favorites = JSON.parse(saved);
-      const exists = favorites.some((f: any) => f.name.toLowerCase() === summonerName.toLowerCase());
-      setIsFavorited(exists);
-    }
     fetchSummoner();
   }, [summonerName]);
 
@@ -65,27 +67,34 @@ export default function SummonerPage() {
     fetchSummoner(newPeriod);
   };
 
-  const toggleFavorite = () => {
+  const toggleFavorite = async () => {
     if (!summoner) return;
     
-    const saved = localStorage.getItem('meta_highlights') || '[]';
-    let favorites = JSON.parse(saved);
-    
-    if (isFavorited) {
-      favorites = favorites.filter((f: any) => f.name.toLowerCase() !== summonerName.toLowerCase());
-    } else {
-      // Dupla verificação para evitar duplicatas acidentais
-      const alreadyExists = favorites.some((f: any) => f.name.toLowerCase() === summonerName.toLowerCase());
-      if (!alreadyExists) {
-        favorites.push({
-          name: summoner.name,
-          label: summoner.name.split('#')[0]
-        });
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const [name, tag] = summoner.name.split('#');
+      const sName = name.trim();
+      const sTag = tag.trim();
+
+      if (isFavorited) {
+        await supabase
+          .from('favorite_summoners')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('summoner_name', sName)
+          .eq('tag_line', sTag);
+      } else {
+        await supabase
+          .from('favorite_summoners')
+          .insert([{ user_id: user.id, summoner_name: sName, tag_line: sTag }]);
       }
+      
+      setIsFavorited(!isFavorited);
+    } catch (err) {
+      console.error("Erro ao alternar favorito:", err);
     }
-    
-    localStorage.setItem('meta_highlights', JSON.stringify(favorites));
-    setIsFavorited(!isFavorited);
   };
 
   if (loading) {
@@ -251,59 +260,98 @@ export default function SummonerPage() {
                   </div>
                 </div>
               )}
-
               {summoner.matches?.map((match: any) => (
-                <div key={match.id} className="nova-glass-light nova-border-glow p-6 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-8 group hover:translate-x-1 transition-all">
+                <div key={match.id} className="nova-glass-light nova-border-glow p-4 sm:pl-6 sm:pr-10 sm:py-6 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-4 md:gap-6 group hover:translate-x-1 transition-all overflow-hidden">
                   
-                  <div className="flex items-center gap-6 w-full md:w-auto">
+                  {/* CHAMPION INFO */}
+                  <div className="flex items-center gap-4 w-full md:w-auto shrink-0 border-b md:border-b-0 md:border-r border-white/5 pb-4 md:pb-0 md:pr-6">
                     <div className="relative">
-                       <div className="w-20 h-20 rounded-[1.8rem] overflow-hidden border-2 border-white/5 group-hover:border-white/20 transition-all">
+                       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.8rem] overflow-hidden border-2 border-white/5 group-hover:border-primary/30 transition-all">
                           <img 
                             src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${formatChampName(match.champion)}.png`} 
                             className="w-full h-full object-cover" 
                             alt="" 
                           />
                        </div>
-                       <div className={`absolute -top-2 -right-2 w-8 h-8 rounded-xl flex items-center justify-center font-black text-[10px] ${match.win ? 'bg-primary text-void shadow-[0_0_15px_rgba(0,255,204,0.4)]' : 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]'}`}>
+                       <div className={`absolute -top-1 -right-1 w-6 h-6 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-black text-[9px] sm:text-[10px] ${match.win ? 'bg-primary text-void shadow-[0_0_15px_rgba(0,255,204,0.4)]' : 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]'}`}>
                           {match.win ? 'V' : 'D'}
                        </div>
                     </div>
                     <div>
-                      <div className="text-xl font-black text-white italic tracking-tighter truncate max-w-[120px]">{formatDisplayName(match.champion)}</div>
-                     <div className="text-[9px] font-black text-muted uppercase tracking-[0.2em]">{match.gameMode}</div>
+                      <div className="text-lg sm:text-2xl font-black text-white italic tracking-tighter truncate max-w-[120px] sm:max-w-none">{formatDisplayName(match.champion)}</div>
+                      <div className="text-[8px] sm:text-[9px] font-black text-muted uppercase tracking-widest opacity-50">{match.gameMode}</div>
                     </div>
                   </div>
 
-                  <div className="flex-1 flex justify-around gap-2 border-x border-white/5 px-4">
-                    <div className="text-center md:text-left min-w-[100px]">
-                       <div className="text-2xl font-black text-white tracking-tighter whitespace-nowrap">
+                  {/* STATS: KDA & CS */}
+                  <div className="flex-1 flex items-center justify-between md:justify-around w-full gap-4 px-2 md:px-0">
+                    <div className="text-left">
+                       <div className="text-xl sm:text-2xl font-black text-white tracking-tighter whitespace-nowrap">
                           {match.kills} / <span className="text-red-400">{match.deaths}</span> / {match.assists}
                        </div>
-                       <div className="text-[10px] font-bold text-muted uppercase mt-0.5 tracking-widest">KDA {match.kda}</div>
+                       <div className="text-[9px] font-bold text-muted uppercase tracking-widest opacity-40">KDA {match.kda}</div>
                     </div>
-                    <div className="hidden sm:block text-right">
-                       <div className="text-lg font-black text-white">{match.cs} <span className="text-[10px] font-bold text-muted">CS</span></div>
-                       <div className="text-[9px] font-bold text-primary italic uppercase">{match.csPerMin}/min</div>
+                    <div className="text-right">
+                       <div className="text-base sm:text-lg font-black text-white">{match.cs} <span className="text-[9px] font-bold text-muted">CS</span></div>
+                       <div className="text-[8px] font-bold text-primary italic uppercase tracking-tighter">{match.csPerMin}/min</div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    {match.items.slice(0, 6).map((item: number, idx: number) => (
-                      <div key={idx} className="w-9 h-9 rounded-xl bg-void border border-white/5 shadow-inner overflow-hidden p-0.5 group/item">
-                        {item > 0 ? (
-                           <img 
-                              src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/item/${item}.png`} 
-                              className="w-full h-full rounded-lg object-cover transition-transform group-hover/item:scale-110" 
+                  {/* ITEMS SECTION */}
+                  <div className="flex flex-col gap-2 w-full md:w-auto items-center md:items-start border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-6 shrink-0">
+                    {/* LINHA SUPERIOR: BOTA E WARD */}
+                    <div className="flex items-center gap-1.5 h-8">
+                      <div className="w-1 h-1 rounded-full bg-primary/40 mr-1 shrink-0"></div>
+                      {/* Bota */}
+                      {(() => {
+                        const boot = match.items.slice(0, 7).find((id: number) => [1001, 3006, 3009, 3047, 3111, 3117, 3158, 3020].includes(id));
+                        return boot ? (
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-void/40 border border-secondary/30 shadow-inner overflow-hidden p-0.5 group/item">
+                            <img 
+                              src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/item/${boot}.png`} 
+                              className="w-full h-full rounded-md object-cover" 
                               alt="" 
-                              onError={(e) => { (e.target as any).style.display = 'none'; }}
-                           />
+                            />
+                          </div>
                         ) : (
-                           <div className="w-full h-full bg-white/[0.02] rounded-lg"></div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/[0.01] border border-white/5"></div>
+                        );
+                      })()}
+                      {/* Ward/Trinket */}
+                      {(() => {
+                        const trinket = match.items.slice(0, 7).find((id: number) => [3340, 3363, 3364].includes(id));
+                        return trinket ? (
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-void/40 border border-primary/30 shadow-inner overflow-hidden p-0.5 group/item">
+                            <img 
+                              src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/item/${trinket}.png`} 
+                              className="w-full h-full rounded-md object-cover" 
+                              alt="" 
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/[0.01] border border-white/5"></div>
+                        );
+                      })()}
+                    </div>
 
+                    {/* LINHA INFERIOR: ITENS PRINCIPAIS */}
+                    <div className="flex items-center gap-1 sm:gap-1.5">
+                      {match.items.slice(0, 7).filter((id: number) => id > 0 && ![3340, 3363, 3364, 1001, 3006, 3009, 3047, 3111, 3117, 3158, 3020].includes(id)).slice(0, 6).map((item: number, idx: number) => (
+                        <div key={`main-${idx}`} className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-void/40 border border-white/5 shadow-inner overflow-hidden p-0.5 group/item hover:border-primary/30 transition-colors">
+                          <img 
+                            src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/item/${item}.png`} 
+                            className="w-full h-full rounded-md sm:rounded-lg object-cover transition-transform group-hover/item:scale-110" 
+                            alt="" 
+                            onError={(e) => { (e.target as any).style.display = 'none'; }}
+                          />
+                        </div>
+                      ))}
+                      {/* Placeholders */}
+                      {Array.from({ length: Math.max(0, 6 - match.items.slice(0, 7).filter((id: number) => id > 0 && ![3340, 3363, 3364, 1001, 3006, 3009, 3047, 3111, 3117, 3158, 3020].includes(id)).length) }).map((_, i) => (
+                        <div key={`empty-main-${i}`} className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-white/[0.01] border border-white/5"></div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ))}
 

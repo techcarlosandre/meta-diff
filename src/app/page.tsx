@@ -8,11 +8,6 @@ import { supabase } from '@/utils/supabase';
 // Cache estático para evitar re-download na navegação
 let ALL_CHAMPS_CACHE: any[] | null = null;
 
-interface Highlight {
-  name: string;
-  label: string;
-}
-
 interface Champion {
   id: string;
   name: string;
@@ -21,11 +16,100 @@ interface Champion {
   };
 }
 
-const DEFAULT_HIGHLIGHTS: Highlight[] = [
-  { name: 'Hide on bush#KR1', label: 'Faker' },
-  { name: 'Baiano#LIVE', label: 'Baiano' },
-  { name: 'Revolta#BR1', label: 'Revolta' },
-  { name: 'Robo#001', label: 'Robo' },
+interface LeaderData {
+  rank: number;
+  summoner_name: string;
+  tag: string;
+  profile_icon_url: string;
+  lp: string;
+  level: string;
+  wins: string;
+  losses: string;
+  winrate: string;
+  top_3_champions: { name: string, icon_url: string }[];
+}
+
+const DEFAULT_HIGHLIGHTS: LeaderData[] = [
+  {
+    "rank": 1,
+    "summoner_name": "Enga",
+    "tag": "#PUNGA",
+    "profile_icon_url": "https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon6809.jpg",
+    "lp": "3,184",
+    "level": "841",
+    "wins": "242",
+    "losses": "173",
+    "winrate": "58%",
+    "top_3_champions": [
+      { "name": "Zoe", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Zoe.png" },
+      { "name": "Ryze", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Ryze.png" },
+      { "name": "Aurora", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Aurora.png" }
+    ]
+  },
+  {
+    "rank": 2,
+    "summoner_name": "Kojima",
+    "tag": "#ゲツヨウビ",
+    "profile_icon_url": "https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon6631.jpg",
+    "lp": "3,056",
+    "level": "1,561",
+    "wins": "322",
+    "losses": "221",
+    "winrate": "59%",
+    "top_3_champions": [
+      { "name": "Ezreal", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Ezreal.png" },
+      { "name": "Aurora", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Aurora.png" },
+      { "name": "Varus", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Varus.png" }
+    ]
+  },
+  {
+    "rank": 3,
+    "summoner_name": "Aithusa",
+    "tag": "#lol",
+    "profile_icon_url": "https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon6544.jpg",
+    "lp": "3,045",
+    "level": "1,097",
+    "wins": "307",
+    "losses": "222",
+    "winrate": "58%",
+    "top_3_champions": [
+      { "name": "Ryze", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Ryze.png" },
+      { "name": "Shen", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Shen.png" },
+      { "name": "Akali", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Akali.png" }
+    ]
+  },
+  {
+    "rank": 4,
+    "summoner_name": "scuro",
+    "tag": "#blox",
+    "profile_icon_url": "https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon6615.jpg",
+    "lp": "3,013",
+    "level": "1,743",
+    "wins": "313",
+    "losses": "224",
+    "winrate": "58%",
+    "top_3_champions": [
+      { "name": "Ezreal", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Ezreal.png" },
+      { "name": "Lucian", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Lucian.png" },
+      { "name": "Aurora", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Aurora.png" }
+    ]
+  },
+  {
+    "rank": 5,
+    "summoner_name": "bipi",
+    "tag": "#moes",
+    "profile_icon_url": "https://opgg-static.akamaized.net/meta/images/profile_icons/profileIcon6335.jpg",
+    "lp": "3,002",
+    "level": "1,260",
+    "wins": "368",
+    "losses": "257",
+    "winrate": "59%",
+    "top_3_champions": [
+      { "name": "Ezreal", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Ezreal.png" },
+      { "name": "Aurora", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Aurora.png" },
+      { "name": "Corki", "icon_url": "https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/Corki.png" }
+    ]
+  }
 ];
 
 export default function Home() {
@@ -97,8 +181,10 @@ export default function Home() {
     e.stopPropagation();
     if (!user) return;
 
-    const [name, tag] = summoner.split('#');
+    let [name, tag] = summoner.split('#');
     if (!name || !tag) return;
+    name = name.trim();
+    tag = tag.trim();
 
     const isFav = favSummoners.some(s => s.summoner_name === name && s.tag_line === tag);
 
@@ -125,16 +211,12 @@ export default function Home() {
       console.error("Erro ao favoritar invocador:", err);
     }
   };
-  const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [allChamps, setAllChamps] = useState<Champion[]>([]);
   const [filteredChamps, setFilteredChamps] = useState<Champion[]>([]);
   const [metaInfo, setMetaInfo] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem('meta_highlights');
-    setHighlights(saved ? JSON.parse(saved) : DEFAULT_HIGHLIGHTS);
-
     async function fetchData() {
       try {
         let champsData;
@@ -310,7 +392,7 @@ export default function Home() {
                       className="group relative w-16 h-16 rounded-2xl overflow-hidden border border-white/10 hover:border-primary transition-all duration-500 hover:scale-110 shadow-xl"
                     >
                       <img 
-                        src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${fav.champion_id}.png`}
+                        src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${fav.champion_id}.png`}
                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                         alt={fav.champion_id}
                       />
@@ -365,39 +447,131 @@ export default function Home() {
           </div>
         )}
 
-        {/* HIGHLIGHTS / RECENTS */}
-        <div className="mt-20">
-          <div className="text-[10px] font-black text-primary uppercase tracking-[0.6em] mb-10 flex items-center justify-center gap-4">
-            <div className="h-[1px] w-12 bg-primary/30"></div>
-            Líderes de Ontem (Winrate %)
-            <div className="h-[1px] w-12 bg-primary/30"></div>
+        {/* LEADERBOARD: LÍDERES DE ONTEM */}
+        <div className="mt-32 w-full max-w-5xl mx-auto">
+          <div className="flex flex-col items-center mb-16">
+            <div className="px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-black text-primary uppercase tracking-[0.4em] mb-4">
+              Meta Rank BR
+            </div>
+            <h2 className="text-4xl font-black text-white uppercase tracking-tighter">
+              Líderes de <span className="text-primary italic">Ontem</span>
+            </h2>
+            <div className="h-1 w-20 bg-gradient-to-r from-primary to-secondary mt-4 rounded-full"></div>
           </div>
-          <div className="flex flex-wrap justify-center gap-4">
-            {(dailyLeaders.length > 0 ? dailyLeaders : DEFAULT_HIGHLIGHTS).map((p) => {
-              const summonerName = p.summoner_name || p.name.split('#')[0];
-              const tagLine = p.tag_line || p.name.split('#')[1];
-              const fullName = `${summonerName}#${tagLine}`;
-              const label = p.win_rate ? `${summonerName} (${p.win_rate} WR)` : (p.label || summonerName);
 
-              return (
-                <div key={fullName} className="relative group/tag">
-                  <button
-                    onClick={() => handleSearch(undefined, fullName)}
-                    className="nova-glass-light border border-white/5 py-3 px-6 rounded-full text-xs font-black text-muted hover:border-primary/50 hover:text-white transition-all pr-12 hover:shadow-[0_0_15px_rgba(0,255,204,0.1)] flex items-center gap-3"
+          <div className="nova-glass rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl relative">
+            {/* Table Header */}
+            <div className="hidden lg:grid grid-cols-12 gap-4 px-10 py-6 border-b border-white/5 bg-white/2 opacity-40 text-[9px] font-black uppercase tracking-[0.2em] text-white">
+              <div className="col-span-1 text-center">#</div>
+              <div className="col-span-4 text-left">Invocador</div>
+              <div className="col-span-1 text-center">Tier</div>
+              <div className="col-span-1 text-center">LP</div>
+              <div className="col-span-2 text-center">Top Campeões</div>
+              <div className="col-span-1 text-center">Nível</div>
+              <div className="col-span-2 text-right">Taxa de Vitória</div>
+            </div>
+
+            {/* Table Body */}
+            <div className="divide-y divide-white/5">
+              {(dailyLeaders.length > 0 ? dailyLeaders : DEFAULT_HIGHLIGHTS).map((p: any, idx: number) => {
+                const rank = p.rank || (idx + 1);
+                const name = p.summoner_name;
+                const tag = p.tag || `#${p.tag_line}`;
+                const wr = p.winrate || p.win_rate;
+                const wins = parseInt(p.wins || "200");
+                const losses = parseInt(p.losses || "150");
+                const total = wins + losses;
+                const winPerc = (wins / total) * 100;
+
+                return (
+                  <div 
+                    key={name}
+                    onClick={() => handleSearch(undefined, `${name}${tag}`)}
+                    className="grid grid-cols-1 lg:grid-cols-12 gap-4 px-6 lg:px-10 py-6 hover:bg-white/[0.03] transition-all cursor-pointer group/row items-center relative"
                   >
-                    {label}
-                    {user && (
-                      <div 
-                        onClick={(e) => toggleSummonerFavorite(e, fullName)}
-                        className={`p-1.5 rounded-lg transition-all ${favSummoners.some(s => s.summoner_name === summonerName && s.tag_line === tagLine) ? 'text-secondary' : 'text-white/10 hover:text-secondary'}`}
-                      >
-                        <Star className={`w-3 h-3 ${favSummoners.some(s => s.summoner_name === summonerName && s.tag_line === tagLine) ? 'fill-secondary' : ''}`} />
+                    {/* Rank */}
+                    <div className="col-span-1 flex justify-center">
+                      <span className={`text-2xl font-black italic tracking-tighter ${rank === 1 ? 'text-primary text-glow-primary scale-110' : 'text-white/20'}`}>
+                        {rank}
+                      </span>
+                    </div>
+
+                    {/* Invocador */}
+                    <div className="col-span-4 flex items-center gap-4">
+                      <div className="relative">
+                        <img 
+                          src={p.profile_icon_url || `https://ddragon.leagueoflegends.com/cdn/15.1.1/img/profileicon/${Math.floor(Math.random() * 50)}.png`}
+                          alt={name}
+                          className="w-14 h-14 rounded-2xl object-cover border border-white/10 group-hover/row:border-primary/50 transition-all"
+                        />
+                        {rank === 1 && (
+                          <div className="absolute -top-2 -right-2 bg-primary text-void text-[8px] font-black px-1.5 py-0.5 rounded-md shadow-glow animate-bounce">
+                            TOP
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </button>
-                </div>
-              );
-            })}
+                      <div className="flex flex-col text-left">
+                        <div className="flex items-center gap-2">
+                           <span className="text-lg font-black text-white group-hover/row:text-primary transition-colors">{name}</span>
+                           <span className="text-[10px] font-bold text-white/20">{tag}</span>
+                           {user && (
+                             <button 
+                               onClick={(e) => toggleSummonerFavorite(e, `${name}${tag}`)}
+                               className={`ml-1 p-1 rounded-md transition-all hover:scale-110 ${favSummoners.some(s => s.summoner_name === name && s.tag_line === tag.replace('#', '')) ? 'text-secondary' : 'text-white/10 hover:text-secondary'}`}
+                             >
+                               <Star className={`w-3 h-3 ${favSummoners.some(s => s.summoner_name === name && s.tag_line === tag.replace('#', '')) ? 'fill-secondary' : ''}`} />
+                             </button>
+                           )}
+                        </div>
+                        <div className="lg:hidden text-[10px] font-bold text-primary/60 uppercase tracking-widest mt-1">Challenger • {p.lp || '3.000'} LP</div>
+                      </div>
+                    </div>
+
+                    {/* Tier (Desktop) */}
+                    <div className="hidden lg:flex col-span-1 justify-center">
+                      <span className="text-[10px] font-black text-white/40 uppercase tracking-tighter">Challenger</span>
+                    </div>
+
+                    {/* LP (Desktop) */}
+                    <div className="hidden lg:flex col-span-1 justify-center">
+                      <span className="text-sm font-black text-secondary text-glow-secondary tracking-tight">{p.lp || '3.000'}</span>
+                    </div>
+
+                    {/* Top Champions */}
+                    <div className="col-span-2 flex justify-center gap-2">
+                      {(p.top_3_champions || []).map((champ: any, i: number) => (
+                        <div key={i} className="w-10 h-10 rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all">
+                          <img src={champ.icon_url} alt={champ.name} className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                      {!p.top_3_champions && (
+                        <div className="flex gap-2 opacity-20">
+                          {[1,2,3].map(i => <div key={i} className="w-10 h-10 bg-white/10 rounded-xl" />)}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Level (Desktop) */}
+                    <div className="hidden lg:flex col-span-1 justify-center">
+                      <span className="text-[11px] font-bold text-white/30">{p.level || '---'}</span>
+                    </div>
+
+                    {/* Winrate Bar */}
+                    <div className="col-span-2 flex flex-col items-end gap-1.5">
+                      <div className="flex justify-between w-full text-[9px] font-black uppercase tracking-tighter">
+                        <span className="text-primary">{wins}V</span>
+                        <span className="text-red-500">{losses}D</span>
+                      </div>
+                      <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden flex border border-white/5">
+                        <div style={{ width: `${winPerc}%` }} className="h-full bg-primary shadow-[0_0_10px_rgba(0,255,204,0.3)]"></div>
+                        <div className="flex-1 h-full bg-red-500/40"></div>
+                      </div>
+                      <span className="text-xs font-black text-white">{wr} <span className="text-[9px] text-white/20 ml-1">Winrate</span></span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>

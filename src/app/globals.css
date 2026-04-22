@@ -33,6 +33,13 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
+  .glass-card {
+    background: rgba(10, 15, 24, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+  }
+
   .nova-border-glow {
     position: relative;
   }
@@ -70,6 +77,15 @@
   }
   .text-glow-primary {
     text-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+  }
+  .text-glow-emerald {
+    text-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
+  }
+  .text-glow-amber {
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+  }
+  .text-glow-red {
+    text-shadow: 0 0 20px rgba(248, 113, 113, 0.4);
   }
   .text-glow-secondary {
     text-shadow: 0 0 20px rgba(255, 184, 0, 0.4);

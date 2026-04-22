@@ -6,7 +6,10 @@ CREATE TABLE IF NOT EXISTS profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   username TEXT UNIQUE,
   avatar_url TEXT,
-  favorite_role TEXT
+  favorite_role TEXT,
+  riot_name TEXT,
+  riot_tag TEXT,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Cache de Invocadores para evitar Rate Limit
