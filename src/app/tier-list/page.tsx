@@ -37,6 +37,13 @@ export default function MetaPage() {
       }
     }
     fetchData();
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+      setLoadedUi(true);
+    }, 8000);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   const getTierSettings = (tier: string) => {

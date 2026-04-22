@@ -33,6 +33,11 @@ export default function UserNav() {
     
     getInitialSession();
 
+    // Timeout de segurança para evitar loading infinito se o Supabase não responder
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
@@ -53,7 +58,10 @@ export default function UserNav() {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const handleLogout = async () => {
