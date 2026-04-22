@@ -22,7 +22,7 @@
 ### 📊 Dashboard Estratégico
 Acompanhe os principais indicadores de performance (KPIs) com uma interface visual limpa, moderna e focada em resultados rápidos.
 <div align="center">
-  <img src="public/readme/home.webp" width="98%" />
+  <img src="public/readme/home.png" width="98%" />
 </div>
 
 <br />
