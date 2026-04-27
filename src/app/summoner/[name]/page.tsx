@@ -116,13 +116,13 @@ export default function SummonerPage() {
   if (error) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center px-4 animate-nova-in">
-        <div className="nova-glass nova-border-glow p-12 rounded-[3.5rem] text-center max-w-md w-full shadow-3xl">
-          <div className="w-20 h-20 bg-red-500/10 rounded-[2rem] flex items-center justify-center mx-auto mb-8">
-            <X className="w-10 h-10 text-red-500" />
+        <div className="nova-glass border border-white/10 p-8 rounded-3xl text-center max-w-md w-full shadow-3xl">
+          <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <X className="w-8 h-8 text-red-500" />
           </div>
-          <h2 className="text-3xl font-black text-white mb-4 italic tracking-tighter">Erro de Identificação</h2>
-          <p className="text-muted font-bold text-sm mb-12 uppercase tracking-wide opacity-60 leading-relaxed">{error}</p>
-          <a href="/" className="inline-block bg-primary text-void px-10 py-4 rounded-2xl font-black uppercase tracking-[0.3em] hover:scale-105 transition-all text-xs">Menu Inicial</a>
+          <h2 className="text-2xl font-black text-white mb-3 italic tracking-tighter uppercase">Erro de Identificação</h2>
+          <p className="text-muted font-bold text-[10px] mb-8 uppercase tracking-wide opacity-60 leading-relaxed">{error}</p>
+          <a href="/" className="inline-block bg-primary text-void px-8 py-3 rounded-xl font-black uppercase tracking-[0.3em] hover:scale-105 transition-all text-[10px]">Menu Inicial</a>
         </div>
       </div>
     );
@@ -133,7 +133,7 @@ export default function SummonerPage() {
       {summoner && (
         <>
           {/* HEADER: DYNAMIC CINEMATIC */}
-          <section className="relative nova-glass nova-border-glow p-8 sm:p-12 rounded-[3.5rem] mb-12 overflow-hidden group">
+          <section className="relative nova-glass border border-white/10 p-6 sm:p-8 rounded-3xl mb-8 overflow-hidden group">
             <div className="absolute inset-0 z-0 opacity-10 group-hover:opacity-20 transition-opacity duration-1000">
                {summoner.matches?.[0] && (
                  <img 
@@ -144,43 +144,41 @@ export default function SummonerPage() {
                )}
             </div>
 
-            <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
+            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
               <div className="relative shrink-0">
-                <div className="w-40 h-40 rounded-[3rem] overflow-hidden border-2 border-white/10 shadow-2xl group-hover:border-primary/50 transition-all duration-500">
+                <div className="w-32 h-32 rounded-2xl overflow-hidden border-2 border-white/10 shadow-2xl group-hover:border-primary/50 transition-all duration-500">
                   <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/profileicon/${summoner.profileIconId}.png`} alt="" className="w-full h-full object-cover" />
                 </div>
-                <div className="absolute -bottom-4 -right-4 nova-glass-light border border-white/20 px-6 py-2 rounded-2xl text-[10px] font-black text-primary shadow-xl">
+                <div className="absolute -bottom-3 -right-3 nova-glass-light border border-white/20 px-4 py-1.5 rounded-xl text-[9px] font-black text-primary shadow-xl">
                   NÍVEL {summoner.summonerLevel || summoner.level || 0}
                 </div>
               </div>
 
               <div className="flex-1 text-center md:text-left">
-                <div className="flex flex-col sm:flex-row items-baseline justify-center md:justify-start gap-4 mb-4">
-                  <h1 className="text-5xl sm:text-7xl font-black text-white tracking-tighter italic">
+                <div className="flex flex-col sm:flex-row items-baseline justify-center md:justify-start gap-3 mb-4">
+                  <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tighter italic uppercase">
                     {summoner.name.split('#')[0]}
                   </h1>
-                  <span className="text-3xl font-bold text-muted opacity-40">#{summoner.name.split('#')[1]}</span>
+                  <span className="text-xl font-bold text-muted opacity-40">#{summoner.name.split('#')[1]}</span>
                 </div>
                 <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                  <div className="px-5 py-2 nova-glass-light rounded-2xl flex items-center gap-3 border border-white/5">
+                  <div className="px-4 py-1.5 nova-glass-light rounded-xl flex items-center gap-2 border border-white/5">
                     <Activity className="w-4 h-4 text-primary" />
                     <span className="text-[10px] font-black text-muted uppercase tracking-widest">{summoner.regionName || 'Global'} Mode</span>
                   </div>
                   <button 
                     onClick={toggleFavorite}
-                    className={`px-5 py-2 rounded-2xl flex items-center gap-3 border transition-all duration-500 group/star relative overflow-hidden ${
+                    className={`px-4 py-1.5 rounded-xl flex items-center gap-2 border transition-all duration-500 group/star relative overflow-hidden ${
                       isFavorited 
-                      ? 'bg-secondary/10 border-secondary/50 text-secondary shadow-[0_0_20px_rgba(255,184,0,0.2)]' 
+                      ? 'bg-secondary/10 border-secondary/50 text-secondary shadow-[0_0_15px_rgba(255,184,0,0.15)]' 
                       : 'nova-glass-light border-white/5 text-white hover:border-primary/50 hover:text-primary'
                     }`}
                   >
-                    {/* ANIMAÇÃO DE FUNDO SÓ NO HOVER */}
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/10 to-primary/0 -translate-x-full group-hover:animate-shimmer pointer-events-none"></div>
-                    
-                    <Star className={`w-4 h-4 transition-all duration-500 ${
-                      isFavorited ? 'fill-secondary text-secondary scale-110' : 'text-muted group-hover:text-primary group-hover:scale-125 group-hover:rotate-12'
+                    <Star className={`w-3.5 h-3.5 transition-all duration-500 ${
+                      isFavorited ? 'fill-secondary text-secondary scale-110' : 'text-muted group-hover:text-primary'
                     }`} />
-                    <span className="text-[10px] font-black uppercase tracking-widest relative z-10">
+                    <span className="text-[9px] font-black uppercase tracking-widest relative z-10">
                       {isFavorited ? 'Favoritado' : 'Favoritar'}
                     </span>
                   </button>
@@ -193,9 +191,9 @@ export default function SummonerPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* LEFT: RANK & PERFORMANCE */}
-            <div className="lg:col-span-4 space-y-8">
-              <div className="nova-glass-light nova-border-glow p-10 rounded-[3rem] text-center">
-                <h3 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] mb-10">Tier Atual</h3>
+            <div className="lg:col-span-4 space-y-6">
+              <div className="nova-glass border border-white/10 p-6 rounded-3xl text-center">
+                <h3 className="text-[9px] font-black text-muted uppercase tracking-[0.4em] mb-6 opacity-60">Tier Atual</h3>
                 {summoner.league && summoner.league.length > 0 ? (
                   <div className="flex flex-col items-center gap-8">
                      {summoner.league.map((rank: any) => (
@@ -219,7 +217,7 @@ export default function SummonerPage() {
                 )}
               </div>
 
-              <div className="nova-glass-light nova-border-glow p-8 rounded-[3rem]">
+              <div className="nova-glass-light nova-border-glow p-8 rounded-3xl">
                 <h3 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] mb-8">Taxa de Vitória Global</h3>
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-4xl font-black text-white italic tracking-tighter">

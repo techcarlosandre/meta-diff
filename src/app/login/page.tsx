@@ -48,8 +48,8 @@ export default function LoginPage() {
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] -mr-64 -mb-64"></div>
 
       <div className="w-full max-w-md relative z-10">
-        <div className="bg-surface/40 backdrop-blur-3xl p-10 sm:p-12 rounded-[3rem] border border-white/10 shadow-3xl">
-          <div className="text-center mb-12">
+        <div className="bg-surface/40 backdrop-blur-3xl p-8 rounded-3xl border border-white/10 shadow-3xl">
+          <div className="text-center mb-8">
             <div className="mb-6 flex flex-col items-center">
               <div className="text-5xl font-black tracking-tighter italic flex items-center gap-1">
                 <span className="text-primary drop-shadow-[0_0_15px_rgba(0,255,242,0.4)]">META</span>
@@ -109,7 +109,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-12">
+          <div className="mt-8">
             <div className="relative h-[1px] bg-white/5 mb-8">
               <div className="absolute inset-0 flex items-center justify-center -top-[10px]">
                 <span className="bg-[#0f0f0f] px-4 text-[9px] font-black text-muted uppercase tracking-[0.3em]">Ou entre com</span>
@@ -135,7 +135,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <p className="text-center mt-12 text-[10px] font-bold text-muted uppercase tracking-widest">
+          <p className="text-center mt-8 text-[10px] font-bold text-muted uppercase tracking-widest">
             Não tem conta? <Link href="/register" className="text-primary hover:underline">CRIAR CONTA</Link>
           </p>
         </div>

@@ -34,14 +34,14 @@ export default function RegisterPage() {
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="relative w-full max-w-md">
-        <div className="absolute -inset-1 bg-gradient-to-r from-secondary to-primary rounded-[2.5rem] blur opacity-20 animate-pulse"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-secondary to-primary rounded-3xl blur opacity-20 animate-pulse"></div>
         
-        <div className="relative bg-surface p-8 sm:p-12 rounded-[2rem] border border-white/10 shadow-2xl">
+        <div className="relative bg-surface p-8 rounded-3xl border border-white/10 shadow-2xl">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-black tracking-tighter mb-2">
-              CRIAR <span className="text-secondary italic">CONTA</span>
+            <h1 className="text-3xl font-black tracking-tighter mb-2 italic">
+              CRIAR <span className="text-secondary">CONTA</span>
             </h1>
-            <p className="text-muted text-sm font-bold uppercase tracking-widest">Junte-se à elite do meta</p>
+            <p className="text-muted text-[10px] font-black uppercase tracking-[0.3em]">Junte-se à elite do meta</p>
           </div>
 
           <form onSubmit={handleRegister} className="space-y-6">
@@ -76,7 +76,7 @@ export default function RegisterPage() {
             </div>
 
             {message && (
-              <p className={`text-xs font-bold text-center p-3 rounded-lg ${message.type === 'error' ? 'bg-red-400/10 text-red-400 border border-red-400/20' : 'bg-secondary/10 text-secondary border border-secondary/20'}`}>
+              <p className={`text-[10px] font-black text-center p-3 rounded-lg ${message.type === 'error' ? 'bg-red-400/10 text-red-400 border border-red-400/20' : 'bg-secondary/10 text-secondary border border-secondary/20'}`}>
                 {message.text}
               </p>
             )}
@@ -84,9 +84,9 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-secondary text-void py-4 rounded-xl font-black uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full bg-secondary text-void py-4 rounded-xl font-black uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-secondary/20"
             >
-              {loading ? 'Criando...' : (
+              {loading ? 'SINCRO...' : (
                 <>
                   Começar agora
                   <ArrowRight className="w-4 h-4" />
@@ -95,7 +95,7 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p className="text-center mt-8 text-xs text-muted font-bold">
+          <p className="text-center mt-8 text-[10px] font-black text-muted uppercase tracking-widest">
             Já tem uma conta? <Link href="/login" className="text-secondary hover:underline">Fazer login</Link>
           </p>
         </div>

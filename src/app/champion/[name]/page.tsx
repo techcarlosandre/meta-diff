@@ -332,7 +332,7 @@ export default function ChampionPage() {
                className="absolute inset-0 w-full h-full object-cover opacity-70 blur-[2px] group-hover:blur-0 group-hover:scale-105 transition-all duration-[2000ms] ease-out"
             />
 
-            <div className="max-w-[1500px] mx-auto w-full px-12 pb-32 relative z-20">
+            <div className="max-w-[1300px] mx-auto w-full px-6 sm:px-12 pb-24 relative z-20">
                <div className="flex flex-col items-start animate-in fade-in slide-in-from-bottom-20 duration-[1200ms]">
                    <div className="flex items-center gap-3 mb-4 text-[11px] font-bold uppercase tracking-[0.3em] text-white/30">
                       <Link href="/tier-list" className="hover:text-primary transition-colors">Meta</Link>
@@ -346,8 +346,8 @@ export default function ChampionPage() {
                       <div className="h-0.5 w-12 bg-primary"></div>
                       <span className="text-primary font-black uppercase tracking-[0.8em] text-[10px] drop-shadow-glow">Protocolo Meta-Diff Ativo</span>
                    </div>
-                  <div className="flex items-center gap-6 mb-10">
-                    <h1 className="text-[clamp(4rem,12vw,10rem)] font-black text-white tracking-tighter leading-[0.8] italic outline-text group-hover:text-white transition-colors duration-700">
+                  <div className="flex items-center gap-6 mb-8">
+                    <h1 className="text-[clamp(2.5rem,7vw,5rem)] font-black text-white tracking-tighter leading-[0.8] italic outline-text group-hover:text-white transition-colors duration-700">
                        {formatDisplayName(champion.id)}
                     </h1>
                     
@@ -365,9 +365,9 @@ export default function ChampionPage() {
                        </button>
                     )}
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex gap-3">
                      {champion.tags.map(t => (
-                        <span key={t} className="px-8 py-3 bg-white/5 border border-white/10 backdrop-blur-3xl rounded-full text-[10px] font-black text-white/50 hover:text-primary hover:border-primary/50 transition-all uppercase tracking-[0.3em] cursor-default">
+                        <span key={t} className="px-6 py-2 bg-white/5 border border-white/10 backdrop-blur-3xl rounded-full text-[9px] font-black text-white/50 hover:text-primary hover:border-primary/50 transition-all uppercase tracking-[0.3em] cursor-default">
                            {translateTag(t)}
                         </span>
                      ))}
@@ -376,10 +376,10 @@ export default function ChampionPage() {
             </div>
          </div>
 
-         <div className="max-w-[1500px] mx-auto px-8 -mt-24 relative z-30 space-y-12 animate-in fade-in slide-in-from-bottom-24 duration-[1000ms]">
+         <div className="max-w-[1300px] mx-auto px-6 sm:px-8 -mt-20 relative z-30 space-y-8 animate-in fade-in slide-in-from-bottom-24 duration-[1000ms]">
             
             {opponent && (
-               <div className="glass-card border border-primary/20 rounded-[2.5rem] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 animate-nova-in shadow-[0_0_50px_rgba(0,255,204,0.1)] mb-12 relative overflow-hidden group/matchup">
+               <div className="glass-card border border-primary/20 rounded-3xl p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-6 animate-nova-in shadow-[0_0_50px_rgba(0,255,204,0.1)] mb-8 relative overflow-hidden group/matchup">
                   <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
                   <div className="flex items-center gap-4 sm:gap-6">
                      <div className="flex -space-x-4 sm:-space-x-6">
@@ -423,52 +423,52 @@ export default function ChampionPage() {
                   >
                      <X className="w-4 h-4" />
                   </button>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative">
+                     {(
+                        [
+                           { label: 'Vitória', val: buildData?.winRate, color: getStatColor(buildData?.winRate, 'win'), icon: TrendingUp },
+                           { label: 'Pick', val: buildData?.pickRate, color: 'text-white', icon: Activity },
+                           { label: 'Ban', val: buildData?.banRate, color: getStatColor(buildData?.banRate, 'ban'), icon: Target },
+                           { label: 'Tier', val: buildData?.tier || 'A', color: 'text-void', special: true }
+                        ] as Array<{ label: string, val: any, color: string, icon?: any, special?: boolean }>
+                     ).map((s, i) => {
+                        const Icon = s.icon;
+                        return (
+                           <div key={i} className={`group relative ${s.special ? getTierColor(s.val) : 'glass-card'} scanline-effect p-4 sm:p-5 rounded-3xl flex flex-col items-center justify-center transition-all hover:-translate-y-2 cursor-default overflow-hidden`}>
+                              {s.special ? (
+                                 <>
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.5em] mb-2 opacity-60 text-center">Status</span>
+                                    <span className="text-2xl sm:text-4xl font-display font-bold italic tracking-tighter uppercase drop-shadow-2xl">
+                                       {buildLoading || (s.val === undefined || s.val === null) ? <div className="w-8 h-8 bg-white/10 animate-pulse rounded-lg"></div> : s.val}
+                                    </span>
+                                 </>
+                              ) : (
+                                 <>
+                                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-10 group-hover:opacity-30 transition-all group-hover:scale-110">
+                                       {Icon && <Icon className="w-4 h-4" />}
+                                    </div>
+                                    <div className={`text-xl sm:text-3xl font-display font-bold italic tracking-tighter ${s.color}`}>
+                                       {buildLoading || !s.val ? <div className="w-14 h-6 bg-white/10 animate-pulse rounded-lg"></div> : formatRate(s.val) + '%'}
+                                    </div>
+                                    <div className="text-[7px] sm:text-[9px] font-black text-white/30 uppercase tracking-[0.5em] mt-3 sm:mt-4 border-t border-white/5 pt-2 sm:pt-3 w-full text-center">
+                                       {s.label}
+                                    </div>
+                                 </>
+                              )}
+                           </div>
+                        );
+                     })}
+                  </div>
                </div>
             )}
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 relative">
-               {(
-                  [
-                     { label: 'Vitória', val: buildData?.winRate, color: getStatColor(buildData?.winRate, 'win'), icon: TrendingUp },
-                     { label: 'Pick', val: buildData?.pickRate, color: 'text-white', icon: Activity },
-                     { label: 'Ban', val: buildData?.banRate, color: getStatColor(buildData?.banRate, 'ban'), icon: Target },
-                     { label: 'Tier', val: buildData?.tier || 'A', color: 'text-void', special: true }
-                  ] as Array<{ label: string, val: any, color: string, icon?: any, special?: boolean }>
-               ).map((s, i) => {
-                  const Icon = s.icon;
-                  return (
-                     <div key={i} className={`group relative ${s.special ? getTierColor(s.val) : 'glass-card'} scanline-effect p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] flex flex-col items-center justify-center transition-all hover:-translate-y-3 cursor-default overflow-hidden`}>
-                        {s.special ? (
-                           <>
-                              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
-                              <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.5em] mb-2 sm:mb-3 opacity-60 text-center">Status</span>
-                              <span className="text-3xl sm:text-5xl font-display font-bold italic tracking-tighter uppercase drop-shadow-2xl">
-                                 {buildLoading || (s.val === undefined || s.val === null) ? <div className="w-10 h-10 bg-white/10 animate-pulse rounded-lg"></div> : s.val}
-                              </span>
-                           </>
-                        ) : (
-                           <>
-                              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 opacity-10 group-hover:opacity-30 transition-all group-hover:scale-110">
-                                 {Icon && <Icon className="w-5 h-5" />}
-                              </div>
-                              <div className={`text-2xl sm:text-4xl font-display font-bold italic tracking-tighter ${s.color}`}>
-                                 {buildLoading || !s.val ? <div className="w-16 h-8 bg-white/10 animate-pulse rounded-lg"></div> : formatRate(s.val) + '%'}
-                              </div>
-                              <div className="text-[8px] sm:text-[10px] font-black text-white/30 uppercase tracking-[0.5em] mt-4 sm:mt-6 border-t border-white/5 pt-3 sm:pt-4 w-full text-center">
-                                 {s.label}
-                              </div>
-                           </>
-                        )}
-                     </div>
-                  );
-               })}
-            </div>
+            
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative mt-12">
                <div className="lg:col-span-8 space-y-8">
 
-                  <section className="glass-card rounded-[2.5rem] p-6 sm:p-8 flex flex-col xl:flex-row items-center justify-between gap-6 sm:gap-8 relative group/arena z-50 overflow-visible">
-                     <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-secondary/5 opacity-50 rounded-[2.5rem]"></div>
+                  <section className="glass-card rounded-3xl p-5 sm:p-6 flex flex-col xl:flex-row items-center justify-between gap-6 relative group/arena z-50 overflow-visible">
+                     <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-secondary/5 opacity-50 rounded-3xl"></div>
                      
                      {opponent && (
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[100px] pointer-events-none z-10 hidden xl:block">
@@ -494,7 +494,7 @@ export default function ChampionPage() {
                      <div className="flex items-center gap-6 sm:gap-10 relative z-20">
                         <div className="relative group/portrait cursor-pointer" onClick={() => setShowMainList(!showMainList)}>
                            <div className="absolute -inset-8 bg-primary/20 blur-[60px] rounded-full opacity-0 group-hover/portrait:opacity-100 transition-all duration-1000"></div>
-                           <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-[1.5rem] sm:rounded-[2rem] border-2 border-primary/40 overflow-hidden shadow-2xl group-hover/portrait:scale-110 group-hover/portrait:border-primary transition-all duration-700 transform-gpu">
+                           <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl border-2 border-primary/40 overflow-hidden shadow-2xl group-hover/portrait:scale-110 group-hover/portrait:border-primary transition-all duration-700 transform-gpu">
                               <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champion.image.full}`} width={112} height={112} className="w-full h-full object-cover" alt={champion.name} />
                               <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
                            </div>
@@ -510,7 +510,7 @@ export default function ChampionPage() {
 
                         <div className="relative group/rival cursor-pointer">
                            <div className="absolute -inset-8 bg-secondary/20 blur-[60px] rounded-full opacity-0 group-hover/rival:opacity-100 transition-all duration-1000"></div>
-                           <button onClick={() => setShowMatchupList(!showMatchupList)} className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-[1.5rem] sm:rounded-[2rem] border-2 border-white/10 bg-white/5 flex items-center justify-center overflow-hidden hover:border-secondary shadow-2xl transition-all duration-700 transform-gpu group-hover/rival:scale-110">
+                           <button onClick={() => setShowMatchupList(!showMatchupList)} className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl border-2 border-white/10 bg-white/5 flex items-center justify-center overflow-hidden hover:border-secondary shadow-2xl transition-all duration-700 transform-gpu group-hover/rival:scale-110">
                               {opponent ? (
                                  <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${opponent.image.full}`} width={112} height={112} className="w-full h-full object-cover" alt={opponent.name} />
                               ) : (
@@ -585,7 +585,7 @@ export default function ChampionPage() {
                         </div>
                      </div>
 
-                     <div className="flex flex-col items-center bg-void/80 border border-white/5 rounded-[2.5rem] p-2 gap-1 relative z-10 shadow-inner w-full xl:w-auto min-h-[60px]">
+                     <div className="flex flex-col items-center bg-void/80 border border-white/5 rounded-3xl p-1.5 gap-1 relative z-10 shadow-inner w-full xl:w-auto min-h-[50px]">
                         <div className="flex items-center flex-wrap justify-center gap-1 w-full sm:w-auto">
                            {championLanes.length > 0 ? (
                               championLanes.map(l => (
@@ -618,7 +618,7 @@ export default function ChampionPage() {
                      </div>
                   </section>
 
-                  <section className="glass-card rounded-[2.5rem] p-6 sm:p-10 relative group/strat overflow-hidden">
+                  <section className="glass-card rounded-3xl p-6 sm:p-7 relative group/strat overflow-hidden">
                      <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none group-hover/strat:opacity-10 transition-all duration-[2000ms]">
                         <Brain className="w-32 sm:w-48 h-32 sm:h-48 text-primary" />
                      </div>
@@ -669,7 +669,7 @@ export default function ChampionPage() {
                   </section>
 
                   <section className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                     <div className="glass-card rounded-[2.5rem] p-6 sm:p-10 border-t border-t-red-500/20 shadow-[0_-20px_40px_-20px_rgba(239,68,68,0.1)]">
+                     <div className="glass-card rounded-3xl p-6 sm:p-7 border-t border-t-red-500/20 shadow-[0_-20px_40px_-20px_rgba(239,68,68,0.1)]">
                         <h4 className="text-[10px] sm:text-[12px] font-black text-red-400 uppercase tracking-[0.5em] mb-4 sm:mb-6 flex items-center gap-3">
                            <Lock className="w-4 h-4" /> Ameaças (Counters)
                         </h4>
@@ -690,7 +690,7 @@ export default function ChampionPage() {
                             )}
                          </div>
                      </div>
-                     <div className="glass-card rounded-[2.5rem] p-6 sm:p-10 border-t border-t-emerald-500/20 shadow-[0_-20px_40px_-20px_rgba(16,185,129,0.1)]">
+                     <div className="glass-card rounded-3xl p-6 sm:p-7 border-t border-t-emerald-500/20 shadow-[0_-20px_40px_-20px_rgba(16,185,129,0.1)]">
                         <h4 className="text-[10px] sm:text-[12px] font-black text-emerald-400 uppercase tracking-[0.5em] mb-4 sm:mb-6 flex items-center gap-3">
                            <Shield className="w-4 h-4" /> Sinergias
                         </h4>
@@ -714,7 +714,7 @@ export default function ChampionPage() {
                   </section>
 
                   <section className="relative group/arsenal">
-                     <div className="relative glass-card scanline-effect rounded-[2.5rem] border border-white/5 bg-void/20 backdrop-blur-3xl p-6 sm:p-10 overflow-hidden">
+                     <div className="relative glass-card scanline-effect rounded-3xl border border-white/5 bg-void/20 backdrop-blur-3xl p-6 sm:p-7 overflow-hidden">
                         
                         <div className="flex flex-col sm:flex-row items-center justify-between mb-8 sm:mb-10 gap-4 sm:gap-6">
                            <div className="flex items-center gap-4">
@@ -725,7 +725,7 @@ export default function ChampionPage() {
                            <div className="text-[8px] sm:text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">v2.0</div>
                         </div>
 
-                        <div className="flex flex-col xl:flex-row items-center gap-8 xl:gap-0 bg-white/[0.02] p-6 sm:p-8 rounded-[2rem] border border-white/5">
+                        <div className="flex flex-col xl:flex-row items-center gap-8 xl:gap-0 bg-white/[0.02] p-6 sm:p-7 rounded-[2rem] border border-white/5">
                            
                            <div className="flex flex-col items-center gap-3">
                               <span className="text-[7px] sm:text-[8px] font-black text-primary/40 uppercase tracking-widest">Início</span>
@@ -803,7 +803,7 @@ export default function ChampionPage() {
                      </div>
                   </section>
 
-                  <section className="glass-card rounded-[2.5rem] p-10 relative group/skills overflow-hidden">
+                  <section className="glass-card rounded-3xl p-6 sm:p-7 relative group/skills overflow-hidden">
                      
                       <div className="absolute inset-0 pointer-events-none z-0">
                          <svg className="w-full h-full opacity-20 group-hover/skills:opacity-50 transition-opacity duration-1000">
@@ -1036,27 +1036,28 @@ export default function ChampionPage() {
                               ))}
                            </div>
                         </div>
-                     </div>
+                      </div>
 
-                     <div className={`mt-16 p-10 rounded-[2rem] border shadow-inner group/wr relative overflow-hidden transition-all duration-1000 ${buildData?.isOffRole ? 'bg-red-950/20 border-red-500/20' : 'bg-void/95 border-white/5'}`}>
-                        <div className={`absolute inset-0 opacity-0 group-hover/wr:opacity-100 transition-opacity duration-1000 ${buildData?.isOffRole ? 'bg-red-500/5' : 'bg-primary/5'}`}></div>
-                        <div className={`text-[11px] font-black uppercase mb-8 tracking-[0.7em] heading-font ${buildData?.isOffRole ? 'text-red-500/60' : 'text-primary/40'}`}>Quociente de Sucesso</div>
-                        <div className={`text-7xl font-display font-bold italic tracking-tighter scale-in-center transition-all duration-[1200ms] group-hover:scale-110 ${buildData?.isOffRole ? 'text-red-500 drop-shadow-[0_0_30px_rgba(239,68,68,0.3)] animate-pulse' : 'text-white drop-shadow-glow'}`}>
-                           {formatRate(buildData?.winRate)}
-                           <span className="text-3xl opacity-40">%</span>
-                        </div>
-                        <div className="mt-8 flex items-center justify-center gap-4">
+                      <div className={`mt-10 p-6 sm:p-7 rounded-3xl border shadow-inner group/wr relative overflow-hidden transition-all duration-1000 ${buildData?.isOffRole ? 'bg-red-950/20 border-red-500/20' : 'bg-void/95 border-white/5'}`}>
+                         <div className={`absolute inset-0 opacity-0 group-hover/wr:opacity-100 transition-opacity duration-1000 ${buildData?.isOffRole ? 'bg-red-500/5' : 'bg-primary/5'}`}></div>
+                         <div className={`text-[10px] font-black uppercase mb-6 tracking-[0.7em] heading-font ${buildData?.isOffRole ? 'text-red-500/60' : 'text-primary/40'}`}>Quociente de Sucesso</div>
+                         <div className={`text-5xl sm:text-6xl font-display font-bold italic tracking-tighter scale-in-center transition-all duration-[1200ms] group-hover:scale-110 ${buildData?.isOffRole ? 'text-red-500 drop-shadow-[0_0_30px_rgba(239,68,68,0.3)] animate-pulse' : 'text-white drop-shadow-glow'}`}>
+                            {formatRate(buildData?.winRate)}
+                            <span className="text-2xl opacity-40">%</span>
+                         </div>
+                      </div>
+
+                      <div className="mt-8 flex items-center justify-center gap-4">
                            <div className={`w-8 h-[2px] ${buildData?.isOffRole ? 'bg-red-500/50' : 'bg-primary'}`}></div>
                            <span className={`text-[10px] font-black uppercase tracking-[0.5em] animate-pulse ${buildData?.isOffRole ? 'text-red-500' : 'text-primary'}`}>
                               {buildData?.isOffRole ? 'Estratégia Adaptada e Instável' : 'Dominando o Meta Local'}
                            </span>
                            <div className={`w-8 h-[2px] ${buildData?.isOffRole ? 'bg-red-500/50' : 'bg-primary'}`}></div>
-                        </div>
                      </div>
                   </section>
-               </div>
-            </div>
-         </div>
-      </div>
-   );
-}
+                </div>
+             </div>
+          </div>
+       </div>
+    );
+ }

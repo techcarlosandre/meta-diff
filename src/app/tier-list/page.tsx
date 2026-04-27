@@ -3,11 +3,9 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { 
   Trophy, TrendingUp, Search, 
-  Activity, Star, Zap, Shield, Flame
+  Activity, Star, Zap, Shield, Flame, X
 } from 'lucide-react';
-import Image from 'next/image';
 import { supabase } from '@/utils/supabase';
-
 
 export default function MetaPage() {
   const [allChamps, setAllChamps] = useState<any[]>([]);
@@ -134,34 +132,36 @@ export default function MetaPage() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 blur-[150px] rounded-full animate-float-delayed opacity-30"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-20 lg:py-28">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 pt-32 md:pt-40 pb-20">
         
-        <div className="flex flex-col md:flex-row justify-between items-end gap-10 border-b border-white/5 pb-16 mb-20 relative">
-          <div className="space-y-6">
-             <div className="flex items-center gap-4">
-                <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
-                   <span className="text-[9px] font-black text-primary uppercase tracking-[0.4em]">Meta Data Sync: Patch 14.8</span>
+        <div className="flex flex-col md:flex-row justify-between items-end gap-12 border-b border-white/5 pb-16 mb-20 relative">
+          <div className="space-y-8 text-center md:text-left w-full md:w-auto">
+             <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
+                <div className="px-4 py-1.5 rounded-full bg-void border border-primary/20 shadow-[0_0_20px_rgba(0,255,204,0.1)]">
+                   <span className="text-[9px] font-black text-primary uppercase tracking-[0.4em]">Sincronia Global: Patch 15.1</span>
                 </div>
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
              </div>
-             <h1 className="text-7xl sm:text-9xl font-black tracking-tighter uppercase leading-[0.8]">
-                <span className="text-white filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">TIER</span><br />
+             
+             <h1 className="text-6xl sm:text-8xl font-black tracking-tighter uppercase leading-[0.8] italic flex flex-col gap-2">
+                <span className="text-white drop-shadow-glow">TIER</span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-shimmer">LIST</span>
              </h1>
-             <p className="text-xs font-medium text-muted max-w-md leading-relaxed tracking-wide">
+             
+             <p className="text-[10px] sm:text-xs font-bold text-white/40 max-w-sm leading-relaxed tracking-widest uppercase mx-auto md:mx-0">
                O dashboard definitivo de precisão cirúrgica. Dados extraídos em tempo real do meta global para garantir sua elite.
              </p>
           </div>
           
           <div className="flex flex-col gap-8 w-full md:w-auto">
              <div className="relative group">
-                <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none"></div>
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-secondary/50 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-[2px] pointer-events-none"></div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none"></div>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-secondary/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-[2px] pointer-events-none"></div>
 
                 <div className="relative flex items-center">
                   <Search className="absolute left-6 w-5 h-5 text-muted group-hover:text-primary transition-colors z-20" />
                   <input 
-                    className="nova-glass border border-white/10 rounded-[2rem] py-6 px-16 w-full md:w-[450px] text-xs font-black uppercase tracking-widest focus:border-primary/50 transition-all outline-none text-white shadow-2xl relative z-10" 
+                    className="glass-card border border-white/10 rounded-3xl py-4 px-12 w-full md:w-[400px] text-[10px] font-black uppercase tracking-widest focus:border-primary/50 transition-all outline-none text-white shadow-2xl relative z-10" 
                     placeholder="Rastrear Campeão..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -179,7 +179,7 @@ export default function MetaPage() {
                    <button 
                     key={l} 
                     onClick={() => setFilterLane(l)}
-                    className={`px-6 py-4 rounded-2xl text-[10px] font-black transition-all duration-500 transform border ${filterLane === l ? 'bg-primary text-void shadow-[0_0_40px_rgba(0,255,204,0.4)] scale-110 border-transparent' : 'bg-white/5 border-white/5 text-muted hover:text-white hover:border-white/20 hover:bg-white/10'}`}
+                    className={`px-5 py-3 rounded-xl text-[9px] font-black transition-all duration-500 transform border ${filterLane === l ? 'bg-primary text-void shadow-[0_0_30px_rgba(0,255,204,0.4)] scale-110 border-transparent' : 'bg-white/5 border-white/5 text-muted hover:text-white hover:border-white/20 hover:bg-white/10'}`}
                    >
                      {translateLane(l)}
                    </button>
@@ -196,8 +196,8 @@ export default function MetaPage() {
             
             return (
               <div key={tier} className="relative group/tier animate-fade-in-up">
-                <div className="flex items-center gap-8 mb-12">
-                   <div className={`w-20 h-20 sm:w-28 sm:h-28 rounded-[2rem] sm:rounded-[3rem] flex items-center justify-center text-4xl sm:text-6xl font-black italic border-4 shadow-2xl transform group-hover/tier:rotate-3 transition-all duration-700 ${settings.bg} ${settings.border} ${settings.color} drop-shadow-[0_0_30px_rgba(var(--primary-glow),0.3)]`}>
+                <div className="flex items-center gap-6 mb-10">
+                   <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center text-3xl sm:text-4xl font-black italic border-[3px] shadow-2xl transform group-hover/tier:rotate-3 transition-all duration-700 ${settings.bg} ${settings.border} ${settings.color} drop-shadow-[0_0_20px_rgba(var(--primary-glow),0.3)]`}>
                      {tier === '-' ? '?' : tier}
                    </div>
                    <div className="space-y-2">
@@ -206,7 +206,7 @@ export default function MetaPage() {
                       </h2>
                       <div className="flex items-center gap-4">
                         <div className={`h-1 flex-1 w-32 rounded-full ${settings.bg} opacity-30`}></div>
-                        <span className="text-[10px] font-black text-muted uppercase tracking-[0.3em] whitespace-nowrap">
+                        <span className="text-[9px] font-black text-muted uppercase tracking-[0.3em] whitespace-nowrap">
                           {champs.length} CAMPEÕES IDENTIFICADOS
                         </span>
                       </div>
@@ -224,22 +224,20 @@ export default function MetaPage() {
                         href={`/champion/${champ.id}`}
                         className="group/card perspective-1000"
                       >
-                        <div className={`relative nova-glass-dark p-6 rounded-[2.5rem] border border-white/5 transition-all duration-700 hover:scale-[1.05] hover:-translate-y-4 hover:border-${settings.border.split('-')[1]}/30 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden group-hover/card:bg-white/5`}>
+                        <div className={`relative glass-card p-5 rounded-3xl border border-white/5 transition-all duration-700 hover:scale-[1.05] hover:-translate-y-3 hover:border-primary/30 hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] overflow-hidden group-hover/card:bg-white/5`}>
                           <div className={`absolute -top-10 -right-10 w-32 h-32 blur-3xl opacity-0 group-hover/card:opacity-20 transition-opacity duration-700 ${settings.bg}`}></div>
                           
-                          <div className="flex items-center gap-5 relative z-10">
-                             <div className={`w-20 h-20 rounded-[1.8rem] border-2 border-white/10 overflow-hidden shadow-lg transform transition-all duration-700 group-hover/card:scale-110 group-hover/card:${settings.border} group-hover/card:rotate-2`}>
-                                <Image 
+                          <div className="flex items-center gap-4 relative z-10">
+                             <div className={`w-16 h-16 rounded-2xl border-2 border-white/10 overflow-hidden shadow-lg transform transition-all duration-700 group-hover/card:scale-110 group-hover/card:${settings.border} group-hover/card:rotate-2`}>
+                                <img 
                                  src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champ.image.full}`} 
-                                 width={80}
-                                 height={80}
                                  className="w-full h-full object-cover transform group-hover/card:scale-125 transition-transform duration-1000" 
                                  alt={champ.name} 
                                 />
                              </div>
 
                             <div className="flex flex-col justify-center">
-                               <h3 className="text-2xl font-black text-white italic tracking-tighter group-hover/card:text-glow-white transition-all duration-300">
+                               <h3 className="text-xl font-black text-white italic tracking-tighter group-hover/card:text-glow-white transition-all duration-300">
                                  {champ.name}
                                </h3>
                                <div className="flex items-center gap-2 mt-1">
@@ -251,18 +249,18 @@ export default function MetaPage() {
                             </div>
                           </div>
 
-                          <div className="mt-8 grid grid-cols-2 gap-3 relative z-10">
-                             <div className="bg-white/[0.03] p-4 rounded-3xl border border-white/5 group-hover/card:bg-white/[0.08] transition-all group-hover/card:border-primary/20">
-                                <div className="text-[8px] font-black text-muted uppercase tracking-widest mb-1 flex items-center gap-1">
+                          <div className="mt-6 grid grid-cols-2 gap-2 relative z-10">
+                             <div className="bg-white/[0.03] p-3 rounded-2xl border border-white/5 group-hover/card:bg-white/[0.08] transition-all group-hover/card:border-primary/20">
+                                <div className="text-[7px] font-black text-muted uppercase tracking-widest mb-1 flex items-center gap-1">
                                    <TrendingUp className="w-2 h-2 text-primary" /> VITÓRIA
                                 </div>
-                                <div className="text-xl font-black text-primary italic tracking-widest italic">{formatRate(m.win_rate)}%</div>
+                                <div className="text-lg font-black text-primary italic tracking-widest italic">{formatRate(m.win_rate)}%</div>
                              </div>
-                             <div className="bg-white/[0.03] p-4 rounded-3xl border border-white/5 group-hover/card:bg-white/[0.08] transition-all group-hover/card:border-secondary/20">
-                                <div className="text-[8px] font-black text-muted uppercase tracking-widest mb-1 flex items-center gap-1">
+                             <div className="bg-white/[0.03] p-3 rounded-2xl border border-white/5 group-hover/card:bg-white/[0.08] transition-all group-hover/card:border-secondary/20">
+                                <div className="text-[7px] font-black text-muted uppercase tracking-widest mb-1 flex items-center gap-1">
                                    <Zap className="w-2 h-2 text-secondary" /> PICK
                                 </div>
-                                <div className="text-xl font-black text-white italic tracking-widest">{formatRate(m.pick_rate)}%</div>
+                                <div className="text-lg font-black text-white italic tracking-widest">{formatRate(m.pick_rate)}%</div>
                              </div>
                           </div>
 
@@ -293,25 +291,5 @@ export default function MetaPage() {
         </div>
       </div>
     </div>
-  );
-}
-
-function X(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
   );
 }
