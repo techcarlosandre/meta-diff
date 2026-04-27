@@ -2,90 +2,99 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/utils/supabase';
 import * as cheerio from 'cheerio';
 
+export const dynamic = 'force-dynamic';
+
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36';
 
 export async function GET() {
   try {
-    console.log("--- INICIANDO SINCRONIZAÇÃO AUTOMÁTICA (LEAGUE OF GRAPHS) ---");
+    console.log("--- INICIANDO SINCRONIZAÇÃO TOTAL (TIER LIST + RANKING BR) ---");
     
-    // 1. Fetch live data
-    const response = await fetch('https://www.leagueofgraphs.com/champions/tier-list', {
-      headers: {
-        'User-Agent': USER_AGENT,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'Accept-Language': 'en-US,en;q=0.9',
-      },
-      next: { revalidate: 0 } // Disable cache
+    // 1. SINCRONIZAR TIER LIST (CAMPEÕES)
+    const tierRes = await fetch('https://www.leagueofgraphs.com/champions/tier-list', {
+      headers: { 'User-Agent': USER_AGENT },
+      next: { revalidate: 0 }
     });
 
-    if (!response.ok) {
-      throw new Error(`Falha ao buscar dados: ${response.status} ${response.statusText}`);
-    }
-
-    const html = await response.text();
+    if (!tierRes.ok) throw new Error('Falha ao buscar Tier List');
+    const tierHtml = await tierRes.text();
+    const $tier = cheerio.load(tierHtml);
+    const itemsJson = $tier('champions-component').attr(':items');
     
-    if (html.includes('<title>Error</title>') || html.length < 5000) {
-      throw new Error('Bloqueio de bot detectado pelo League of Graphs.');
-    }
-
-    const $ = cheerio.load(html);
-    const championsComponent = $('champions-component');
-    const itemsJson = championsComponent.attr(':items');
-    
-    if (!itemsJson) {
-      throw new Error('<champions-component> não encontrado ou atributo :items ausente.');
-    }
-
-    const rawChampions = JSON.parse(itemsJson);
     const champions: any[] = [];
+    if (itemsJson) {
+      const raw = JSON.parse(itemsJson);
+      raw.forEach((item: any) => {
+        let role = (item.role.name || 'MID').toUpperCase();
+        if (role === 'MIDDLE') role = 'MID';
+        if (role === 'BOTTOM') role = 'ADC';
 
-    rawChampions.forEach((item: any) => {
-      const name = item.championName;
-      const role = item.role.name;
-      const tier = item.tier.tier.toUpperCase();
-      
-      const winRate = (item.popularity.winRate * 100).toFixed(2);
-      const pickRate = (item.popularity.playedPercentage * 100).toFixed(2);
-      const banRate = (item.banRate * 100).toFixed(2);
-      
-      if (name) {
         champions.push({
-          champion_name: name,
-          role: role === 'MIDDLE' ? 'MID' : (role === 'BOTTOM' ? 'ADC' : role),
-          tier_rank: tier,
-          win_rate: parseFloat(winRate) || 0,
-          pick_rate: parseFloat(pickRate) || 0,
-          ban_rate: parseFloat(banRate) || 0
+          champion_name: item.championName,
+          role: role,
+          tier_rank: item.tier.tier.toUpperCase() || 'A',
+          win_rate: parseFloat((item.popularity.winRate * 100).toFixed(2)) || 0,
+          pick_rate: parseFloat((item.popularity.playedPercentage * 100).toFixed(2)) || 0,
+          ban_rate: parseFloat((item.banRate * 100).toFixed(2)) || 0
+        });
+      });
+    }
+
+    // 2. SINCRONIZAR LÍDERES (RANKING BR)
+    const rankRes = await fetch('https://www.leagueofgraphs.com/rankings/summoners/br', {
+      headers: { 'User-Agent': USER_AGENT },
+      next: { revalidate: 0 }
+    });
+
+    if (!rankRes.ok) throw new Error('Falha ao buscar Ranking BR');
+    const rankHtml = await rankRes.text();
+    const $rank = cheerio.load(rankHtml);
+    const leaders: any[] = [];
+
+    $rank('table.data_table tr:not(.header)').each((i, row) => {
+      if (i >= 5) return;
+      const fullText = $rank(row).find('td:nth-child(2) .name span').text().trim();
+      const winRateCell = $rank(row).find('td:nth-child(3)').text().trim();
+      const [name, tag] = fullText.split('#');
+      const winRateMatch = winRateCell.match(/\((\d+\.?\d*)%\)/);
+      
+      if (name && tag) {
+        leaders.push({
+          summoner_name: name.trim(),
+          tag_line: tag.trim(),
+          win_rate: winRateMatch ? winRateMatch[1] + '%' : '50%',
+          rank: (i + 1).toString()
         });
       }
     });
 
-    console.log(`Sucesso: ${champions.length} campeões extraídos.`);
+    // 3. ATUALIZAR BANCO DE DADOS (SUPABASE)
+    console.log(`Dados processados: ${champions.length} campeões e ${leaders.length} líderes.`);
 
-    // 2. Atualizar Supabase (Transacional)
-    // Limpar dados antigos primeiro
-    await supabase.from('route_meta').delete().neq('id', 0);
-    
-    // Inserir novos dados em chunks
-    const chunkSize = 50;
-    for (let i = 0; i < champions.length; i += chunkSize) {
-      const chunk = champions.slice(i, i + chunkSize);
-      const { error } = await supabase.from('route_meta').insert(chunk);
-      if (error) throw error;
+    // Atualizar Meta Champions
+    if (champions.length > 0) {
+      await supabase.from('route_meta').delete().neq('id', -1);
+      const chunkSize = 50;
+      for (let i = 0; i < champions.length; i += chunkSize) {
+        await supabase.from('route_meta').insert(champions.slice(i, i + chunkSize));
+      }
+    }
+
+    // Atualizar Líderes Diários
+    if (leaders.length > 0) {
+      await supabase.from('daily_leaders').delete().neq('rank', '999');
+      await supabase.from('daily_leaders').insert(leaders);
     }
 
     return NextResponse.json({ 
       success: true, 
-      message: 'Sincronização Meta concluída com sucesso!',
-      champions_synced: champions.length
+      message: 'Sincronização completa realizada!',
+      stats: { champions: champions.length, leaders: leaders.length }
     });
 
   } catch (error: any) {
-    console.error("Erro no Sync Automático:", error);
-    return NextResponse.json({ 
-      success: false, 
-      error: error.message,
-      tip: "Se o bloqueio persistir, considere usar um serviço de proxy ou rodar via GitHub Actions."
-    }, { status: 500 });
+    console.error("Erro na Automação Diária:", error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+

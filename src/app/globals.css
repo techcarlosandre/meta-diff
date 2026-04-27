@@ -235,6 +235,50 @@
   perspective: 1000px;
 }
 
+/* Performance Optimization: Skip rendering of off-screen components */
+.optimize-render {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 500px;
+}
+
+/* Reduced motion for accessibility and performance if needed */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile Performance Tweak: Reduce heavy filters on small screens */
+@media (max-width: 768px) {
+  .nova-glass, .nova-glass-light, .glass-card {
+    backdrop-filter: blur(8px); /* Lighter blur for mobile GPUs */
+    -webkit-backdrop-filter: blur(8px);
+    background: rgba(10, 15, 24, 0.85); /* More solid to maintain readability */
+  }
+  
+  .nova-blob {
+    display: none; /* Hide heavy blobs on mobile to save battery and RAM */
+  }
+
+  .particle {
+    height: 40px; /* Shorter particles for mobile */
+  }
+}
+
 .heading-font {
   font-family: 'Outfit', sans-serif;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent layout shift on images */
+img {
+  content-visibility: auto;
 }

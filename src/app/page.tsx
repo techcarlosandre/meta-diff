@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Search, User, X, ChevronRight, Target, Star } from 'lucide-react';
 import { supabase } from '@/utils/supabase';
+
 
 // Cache estático para evitar re-download na navegação
 let ALL_CHAMPS_CACHE: any[] | null = null;
@@ -350,7 +352,14 @@ export default function Home() {
                       href={`/champion/${champ.id}`}
                       className="flex items-center gap-4 p-3 hover:bg-white/5 rounded-2xl transition-all group/item"
                     >
-                      <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champ.image.full}`} alt={champ.name} className="w-12 h-12 rounded-xl object-cover border border-white/10" />
+                      <Image 
+                        src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champ.image.full}`} 
+                        alt={champ.name} 
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 rounded-xl object-cover border border-white/10" 
+                      />
+
                       <div className="flex-1 text-left">
                         <div className="text-sm font-black text-white group-hover/item:text-primary transition-colors">{champ.name}</div>
                         <div className="text-[9px] font-black text-muted uppercase tracking-widest">{meta ? meta.role : 'Meta Ativa'}</div>
@@ -387,11 +396,14 @@ export default function Home() {
                       href={`/champion/${fav.champion_id}`}
                       className="group relative w-16 h-16 rounded-2xl overflow-hidden border border-white/10 hover:border-primary transition-all duration-500 hover:scale-110 shadow-xl"
                     >
-                      <img 
+                      <Image 
                         src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${fav.champion_id}.png`}
                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                         alt={fav.champion_id}
+                        width={64}
+                        height={64}
                       />
+
                       <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </Link>
                   )) : (
@@ -455,7 +467,8 @@ export default function Home() {
             <div className="h-1 w-20 bg-gradient-to-r from-primary to-secondary mt-4 rounded-full"></div>
           </div>
 
-          <div className="nova-glass rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl relative">
+          <div className="nova-glass rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl relative optimize-render">
+
             {/* Table Header */}
             <div className="hidden lg:grid grid-cols-12 gap-4 px-10 py-6 border-b border-white/5 bg-white/2 opacity-40 text-[9px] font-black uppercase tracking-[0.2em] text-white">
               <div className="col-span-1 text-center">#</div>
@@ -495,11 +508,14 @@ export default function Home() {
                     {/* Invocador */}
                     <div className="col-span-4 flex items-center gap-4">
                       <div className="relative">
-                        <img 
+                        <Image 
                           src={p.profile_icon_url || `https://ddragon.leagueoflegends.com/cdn/15.1.1/img/profileicon/${Math.floor(Math.random() * 50)}.png`}
                           alt={name}
+                          width={56}
+                          height={56}
                           className="w-14 h-14 rounded-2xl object-cover border border-white/10 group-hover/row:border-primary/50 transition-all"
                         />
+
                         {rank === 1 && (
                           <div className="absolute -top-2 -right-2 bg-primary text-void text-[8px] font-black px-1.5 py-0.5 rounded-md shadow-glow animate-bounce">
                             TOP
@@ -537,9 +553,11 @@ export default function Home() {
                     <div className="col-span-2 flex justify-center gap-2">
                       {(p.top_3_champions || []).map((champ: any, i: number) => (
                         <div key={i} className="w-10 h-10 rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all">
-                          <img src={champ.icon_url} alt={champ.name} className="w-full h-full object-cover" />
+                          <Image src={champ.icon_url} alt={champ.name} width={40} height={40} className="w-full h-full object-cover" />
                         </div>
                       ))}
+
+
                       {!p.top_3_champions && (
                         <div className="flex gap-2 opacity-20">
                           {[1,2,3].map(i => <div key={i} className="w-10 h-10 bg-white/10 rounded-xl" />)}

@@ -18,7 +18,7 @@ export default function SummonerPage() {
   const [matchLoading, setMatchLoading] = useState(false);
 
   async function fetchSummoner(selectedPeriod?: string) {
-    if (!summonerName) return;
+    if (!rawName) return;
     
     if (selectedPeriod) setMatchLoading(true);
     else setLoading(true);
@@ -26,16 +26,19 @@ export default function SummonerPage() {
     setError(null);
     try {
       const activePeriod = selectedPeriod || period;
-      const res = await fetch(`/api/summoner/${encodeURIComponent(summonerName)}?period=${activePeriod.toLowerCase()}`);
+      // Usamos o rawName direto (que já vem com hífem do Home) para a API
+      // O backend agora suporta tanto '-' quanto '#'
+      const res = await fetch(`/api/summoner/${encodeURIComponent(rawName)}?period=${activePeriod.toLowerCase()}`);
       const data = await res.json();
+      
       if (!res.ok) {
-        setError(data.error || 'Identidade não encontrada.');
+        setError(data.error || 'Ocorreu um erro ao buscar os dados.');
       } else {
         setSummoner(data);
         
         // Check if favorited in Supabase
         const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
+        if (user && data.name) {
           const [name, tag] = data.name.split('#');
           const { data: fav } = await supabase
             .from('favorite_summoners')
@@ -49,7 +52,8 @@ export default function SummonerPage() {
         }
       }
     } catch (err) {
-      setError('Falha na sincronização.');
+      console.error("Fetch Error:", err);
+      setError('Não foi possível conectar ao servidor. Verifique sua conexão.');
     } finally {
       setLoading(false);
       setMatchLoading(false);
@@ -57,9 +61,10 @@ export default function SummonerPage() {
   }
 
   useEffect(() => {
-    if (!summonerName) return;
+    if (!rawName) return;
     fetchSummoner();
-  }, [summonerName]);
+  }, [rawName]);
+
 
   const handlePeriodChange = (newPeriod: string) => {
     if (newPeriod === period) return;
@@ -232,7 +237,8 @@ export default function SummonerPage() {
             </div>
 
             {/* RIGHT: MATCH TILES */}
-            <div className="lg:col-span-8 space-y-6 relative min-h-[400px]">
+            <div className="lg:col-span-8 space-y-6 relative min-h-[400px] optimize-render">
+
               <div className="flex items-center justify-between px-4 mb-2">
                  <h3 className="text-[10px] font-black text-muted uppercase tracking-[0.4em]">Histórico de Batalha</h3>
                  <div className="flex gap-4">
