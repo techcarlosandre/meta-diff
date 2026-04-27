@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { formatChampName, formatDisplayName } from '@/utils/riot';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase';
+import Image from 'next/image';
 import {
    Lock, User, Shield, Sword, Zap, Brain, ChevronRight, Star, Target, TrendingUp,
    Lightbulb, Plus, Sparkles, Activity,
