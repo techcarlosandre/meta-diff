@@ -4,12 +4,12 @@ import { useParams, useRouter } from 'next/navigation';
 import { formatChampName, formatDisplayName } from '@/utils/riot';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase';
-import NextImage from 'next/image';
 import {
    Lock, User, Shield, Sword, Zap, Brain, ChevronRight, Star, Target, TrendingUp,
    Lightbulb, Plus, Sparkles, Activity,
    Trophy, Ghost, Flame, AlertTriangle, X
 } from 'lucide-react';
+
 
 
 let RUNES_CACHE: any[] | null = null;
@@ -384,10 +384,10 @@ export default function ChampionPage() {
                   <div className="flex items-center gap-4 sm:gap-6">
                      <div className="flex -space-x-4 sm:-space-x-6">
                         <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-primary overflow-hidden shadow-glow z-10">
-                           <NextImage src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champion.image.full}`} width={64} height={64} className="w-full h-full object-cover" alt="" />
+                           <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champion.image.full}`} width={64} height={64} className="w-full h-full object-cover" alt="" />
                         </div>
                         <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-secondary overflow-hidden shadow-glow-amber">
-                           <NextImage src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${opponent.image.full}`} width={64} height={64} className="w-full h-full object-cover" alt="" />
+                           <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${opponent.image.full}`} width={64} height={64} className="w-full h-full object-cover" alt="" />
                         </div>
                      </div>
                      <div>
@@ -495,7 +495,7 @@ export default function ChampionPage() {
                         <div className="relative group/portrait cursor-pointer" onClick={() => setShowMainList(!showMainList)}>
                            <div className="absolute -inset-8 bg-primary/20 blur-[60px] rounded-full opacity-0 group-hover/portrait:opacity-100 transition-all duration-1000"></div>
                            <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-[1.5rem] sm:rounded-[2rem] border-2 border-primary/40 overflow-hidden shadow-2xl group-hover/portrait:scale-110 group-hover/portrait:border-primary transition-all duration-700 transform-gpu">
-                              <NextImage src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champion.image.full}`} width={112} height={112} className="w-full h-full object-cover" alt={champion.name} />
+                              <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champion.image.full}`} width={112} height={112} className="w-full h-full object-cover" alt={champion.name} />
                               <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
                            </div>
                            <div className="absolute -bottom-3 inset-x-0 flex justify-center">
@@ -512,7 +512,7 @@ export default function ChampionPage() {
                            <div className="absolute -inset-8 bg-secondary/20 blur-[60px] rounded-full opacity-0 group-hover/rival:opacity-100 transition-all duration-1000"></div>
                            <button onClick={() => setShowMatchupList(!showMatchupList)} className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-[1.5rem] sm:rounded-[2rem] border-2 border-white/10 bg-white/5 flex items-center justify-center overflow-hidden hover:border-secondary shadow-2xl transition-all duration-700 transform-gpu group-hover/rival:scale-110">
                               {opponent ? (
-                                 <NextImage src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${opponent.image.full}`} width={112} height={112} className="w-full h-full object-cover" alt={opponent.name} />
+                                 <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${opponent.image.full}`} width={112} height={112} className="w-full h-full object-cover" alt={opponent.name} />
                               ) : (
                                  <div className="flex flex-col items-center gap-2 sm:gap-4">
                                     <Target className="text-secondary w-5 h-5 sm:w-8 sm:h-8 animate-pulse" />
@@ -550,7 +550,7 @@ export default function ChampionPage() {
                                  <div className="grid grid-cols-4 gap-2 sm:gap-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                     {allChamps.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => (
                                        <div key={c.id} onClick={() => { router.push(`/champion/${c.id}`); setShowMainList(false); }} className="relative group/box cursor-pointer aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all duration-500">
-                                          <NextImage src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${c.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" alt="" />
+                                          <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${c.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" alt="" />
                                        </div>
                                     ))}
                                  </div>
@@ -576,7 +576,7 @@ export default function ChampionPage() {
                                      </div>
                                     {allChamps.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => (
                                        <div key={c.id} onClick={() => { setOpponent(c); setShowMatchupList(false); }} className="relative group/box cursor-pointer aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all duration-500">
-                                          <NextImage src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${c.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" alt="" />
+                                          <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${c.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" alt="" />
                                        </div>
                                     ))}
                                  </div>
@@ -682,7 +682,7 @@ export default function ChampionPage() {
                                   if (!cData) return null;
                                   return (
                                      <Link key={cName} href={`/champion/${cData.id}`} className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-red-500/30 group/counter hover:border-red-400 transition-all cursor-pointer shadow-lg block shrink-0">
-                                        <NextImage src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${cData.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale opacity-60 group-hover/counter:grayscale-0 group-hover/counter:opacity-100 transition-all group-hover/counter:scale-110" alt="" />
+                                        <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${cData.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale opacity-60 group-hover/counter:grayscale-0 group-hover/counter:opacity-100 transition-all group-hover/counter:scale-110" alt="" />
                                         <div className="absolute inset-0 bg-red-500/20 mix-blend-overlay group-hover/counter:opacity-0 transition-all"></div>
                                      </Link>
                                   );
@@ -703,7 +703,7 @@ export default function ChampionPage() {
                                   if (!cData) return null;
                                   return (
                                      <Link key={cName} href={`/champion/${cData.id}`} className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-emerald-500/30 group/synergy hover:border-emerald-400 transition-all cursor-pointer shadow-lg block shrink-0">
-                                        <NextImage src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${cData.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale opacity-60 group-hover/synergy:grayscale-0 group-hover/synergy:opacity-100 transition-all group-hover/synergy:scale-110" alt="" />
+                                        <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${cData.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale opacity-60 group-hover/synergy:grayscale-0 group-hover/synergy:opacity-100 transition-all group-hover/synergy:scale-110" alt="" />
                                         <div className="absolute inset-0 bg-emerald-500/20 mix-blend-overlay group-hover/synergy:opacity-0 transition-all"></div>
                                      </Link>
                                   );
@@ -733,7 +733,7 @@ export default function ChampionPage() {
                                  {buildLoading || !buildData ? [1, 2].map(i => <div key={i} className="w-10 h-10 sm:w-11 sm:h-11 bg-white/5 animate-pulse rounded-xl" />) : 
                                     buildData?.start.map((id: number, i: number) => (
                                        <div key={i} className="w-10 h-10 sm:w-11 sm:h-11 bg-void rounded-xl border border-white/10 overflow-hidden shrink-0">
-                                          <NextImage src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/item/${id}.png`} width={44} height={44} className="w-full h-full object-cover" alt="" />
+                                          <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/item/${id}.png`} width={44} height={44} className="w-full h-full object-cover" alt="" />
                                        </div>
                                     ))
                                  }
@@ -750,7 +750,7 @@ export default function ChampionPage() {
                                        <div key={i} className="relative group/it shrink-0">
                                           <div className="absolute -inset-2 bg-white/5 blur-xl rounded-full opacity-0 group-hover/it:opacity-100 transition-opacity"></div>
                                           <div className="relative w-16 h-16 sm:w-24 sm:h-24 bg-void rounded-[1rem] sm:rounded-[1.5rem] border border-white/10 group-hover/it:border-white/40 overflow-hidden transition-all duration-500 shadow-2xl">
-                                             <NextImage src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/item/${id}.png`} width={96} height={96} className="w-full h-full object-cover" alt="" />
+                                             <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/item/${id}.png`} width={96} height={96} className="w-full h-full object-cover" alt="" />
                                              <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20"></div>
                                           </div>
                                        </div>
@@ -766,7 +766,7 @@ export default function ChampionPage() {
                               <div className="flex gap-2 flex-wrap justify-center">
                                  {buildData?.core.filter((id: number) => ![3006, 3009, 3020, 3047, 3111, 3117, 3158].includes(id)).slice(3, 6).map((id: number, i: number) => (
                                     <div key={i} className="w-12 h-12 sm:w-16 sm:h-16 bg-void/50 rounded-xl border border-white/10 hover:border-primary/40 overflow-hidden transition-all duration-300 shrink-0">
-                                       <NextImage src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/item/${id}.png`} width={64} height={64} className="w-full h-full object-cover" alt="" />
+                                       <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/item/${id}.png`} width={64} height={64} className="w-full h-full object-cover" alt="" />
                                        <div className="absolute inset-x-0 bottom-0 h-1 bg-white/10"></div>
                                     </div>
                                  ))}
@@ -782,7 +782,7 @@ export default function ChampionPage() {
                               <div className="flex gap-2">
                                  {buildData?.core.filter((id: number) => [3006, 3009, 3020, 3047, 3111, 3117, 3158].includes(id)).map((id: number, i: number) => (
                                     <div key={i} className="w-12 h-12 bg-secondary/5 rounded-xl border border-secondary/20 flex items-center justify-center p-1.5 shadow-glow-amber">
-                                       <NextImage src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/item/${id}.png`} width={48} height={48} className="w-full h-full object-contain rounded-lg" alt="Item" />
+                                       <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/item/${id}.png`} width={48} height={48} className="w-full h-full object-contain rounded-lg" alt="Item" />
                                     </div>
                                  ))}
                               </div>
@@ -793,7 +793,7 @@ export default function ChampionPage() {
                               <div className="flex gap-2">
                                  {buildData?.summoners.map((id: number, i: number) => (
                                     <div key={i} className="w-10 h-10 bg-void rounded-lg border border-white/5 overflow-hidden hover:border-primary/40 transition-all">
-                                       <NextImage src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/spell/${getSpellName(id)}.png`} width={40} height={40} className="w-full h-full object-cover" alt="Spell" />
+                                       <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/spell/${getSpellName(id)}.png`} width={40} height={40} className="w-full h-full object-cover" alt="Spell" />
                                     </div>
                                  ))}
                               </div>
@@ -927,7 +927,7 @@ export default function ChampionPage() {
                                     >
                                        <div className="relative group/tooltip">
                                           <div className="w-12 h-12 shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl hover:border-primary cursor-pointer transition-all duration-500 relative transform-gpu hover:scale-110">
-                                             <NextImage src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/${isPassive ? 'passive' : 'spell'}/${spell.image.full}`} width={48} height={48} className="w-full h-full object-cover" alt={spell.name} />
+                                             <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/${isPassive ? 'passive' : 'spell'}/${spell.image.full}`} width={48} height={48} className="w-full h-full object-cover" alt={spell.name} />
                                              <div className="absolute top-0 right-0 bg-void/90 px-2 py-0.5 text-[9px] font-black text-primary border-b border-l border-white/10 rounded-bl-lg">{key}</div>
                                           </div>
                                           <div className="absolute bottom-full left-0 mb-4 w-80 glass-card p-6 rounded-2xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 z-[999] shadow-[0_0_50px_rgba(0,0,0,0.8)] pointer-events-none border border-white/10">
@@ -975,7 +975,7 @@ export default function ChampionPage() {
                                  <div className="absolute -inset-10 bg-primary/20 blur-[60px] rounded-full animate-pulse transition-all"></div>
                                  <div className="relative w-24 h-24 rounded-full bg-void/90 flex items-center justify-center border-2 border-primary/40 shadow-glow transform-gpu group-hover/rune-main:scale-110 transition-all duration-700">
                                     {buildData?.runes && Array.isArray(runesData) && runesData.find((t: any) => t.key === buildData?.runes.primaryTree) && (
-                                       <NextImage src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find((t: any) => t.key === buildData?.runes.primaryTree).icon}`} width={64} height={64} className="w-16 h-16 object-contain z-10 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" alt="Rune" />
+                                       <img src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find((t: any) => t.key === buildData?.runes.primaryTree).icon}`} width={64} height={64} className="w-16 h-16 object-contain z-10 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" alt="Rune" />
                                     )}
                                     <div className="absolute inset-0 scanline-effect rounded-full opacity-20"></div>
                                  </div>
@@ -999,7 +999,7 @@ export default function ChampionPage() {
                                  <div className="absolute -inset-8 bg-secondary/20 blur-[50px] rounded-full opacity-50"></div>
                                  <div className="relative w-20 h-20 rounded-full bg-void/90 flex items-center justify-center border-2 border-secondary/30 shadow-glow-amber transform-gpu group-hover/rune-sec:scale-110 transition-all duration-700">
                                     {buildData?.runes && Array.isArray(runesData) && runesData.find((t: any) => t.key === buildData?.runes.secondaryTree) && (
-                                       <NextImage src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find((t: any) => t.key === buildData?.runes.secondaryTree).icon}`} width={48} height={48} className="w-12 h-12 object-contain z-10" alt="Rune" />
+                                       <img src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find((t: any) => t.key === buildData?.runes.secondaryTree).icon}`} width={48} height={48} className="w-12 h-12 object-contain z-10" alt="Rune" />
                                     )}
                                  </div>
                               </div>
@@ -1027,7 +1027,7 @@ export default function ChampionPage() {
                                        return (
                                           <div key={optIdx} className="relative group">
                                              <div className={`w-8 h-8 rounded-full border-2 transition-all duration-300 flex items-center justify-center p-1 ${isSelected ? 'border-primary bg-primary/20 shadow-[0_0_10px_rgba(34,211,238,0.3)] scale-110' : 'border-transparent opacity-20 hover:opacity-100 grayscale hover:grayscale-0'}`}>
-                                                <NextImage src={`https://ddragon.leagueoflegends.com/cdn/img/perk-images/StatMods/${icon}`} width={32} height={32} className="w-full h-full object-contain" alt="Shard" />
+                                                <img src={`https://ddragon.leagueoflegends.com/cdn/img/perk-images/StatMods/${icon}`} width={32} height={32} className="w-full h-full object-contain" alt="Shard" />
                                              </div>
                                           </div>
                                        );
