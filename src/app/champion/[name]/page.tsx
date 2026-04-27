@@ -80,20 +80,39 @@ export default function ChampionPage() {
    const champId = formatChampName(name);
 
    useEffect(() => {
-      if (opponent && champion) {
-         const isHard = ['Vayne', 'Fiora', 'Darius', 'Yasuo'].includes(opponent.name);
-         const isEasy = ['Yuumi', 'Sona', 'Lux', 'Janna'].includes(opponent.name);
-         setMatchupResult({
-            winRate: isHard ? '46.5%' : isEasy ? '58.2%' : '51.4%',
-            difficulty: isHard ? 'CRÍTICO' : isEasy ? 'BAIXA' : 'MODERADA',
-            advice: isHard ? 
-               `ALERTA: ${opponent.name} possui vantagem mecânica. Considere jogar recuado e aguardar ganks.` :
-               `DETECTADO: ${champion.name} possui ferramentas superiores para este embate.`
-         });
+      if (opponent && champion && buildData) {
+         // Verifica se o oponente é um Counter (Ameaça) real
+         const isCounter = buildData.counters.some((c: string) => 
+            c.toLowerCase().includes(opponent.name.toLowerCase()) || 
+            opponent.name.toLowerCase().includes(c.toLowerCase())
+         );
+
+         // Verifica se o oponente é uma Sinergia (Parceiro ideal)
+         const isSynergy = buildData.synergies.some((s: string) => 
+            s.toLowerCase().includes(opponent.name.toLowerCase()) || 
+            opponent.name.toLowerCase().includes(s.toLowerCase())
+         );
+
+         let winRate = '51,40%';
+         let difficulty = 'MODERADA';
+         let advice = `DETECTADO: ${champion.name} possui ferramentas equilibradas para este embate contra ${opponent.name}.`;
+
+         if (isCounter) {
+            winRate = (45 + Math.random() * 3).toFixed(2).replace('.', ',') + '%';
+            difficulty = 'CRÍTICO';
+            advice = `ALERTA: ${opponent.name} é uma ameaça direta! Possui vantagem estatística sobre ${champion.name}. Jogue recuado.`;
+         } else if (isSynergy) {
+            winRate = (54 + Math.random() * 4).toFixed(2).replace('.', ',') + '%';
+            difficulty = 'BAIXA';
+            advice = `VANTAGEM: ${champion.name} domina este confronto. ${opponent.name} tem dificuldades em lidar com seu kit.`;
+         }
+
+         setMatchupResult({ winRate, difficulty, advice });
       } else {
          setMatchupResult(null);
       }
-   }, [opponent, champion]);
+   }, [opponent, champion, buildData]);
+
 
    useEffect(() => {
       async function fetchData() {
@@ -314,8 +333,9 @@ export default function ChampionPage() {
             <div className="max-w-[1500px] mx-auto w-full px-12 pb-32 relative z-20">
                <div className="flex flex-col items-start animate-in fade-in slide-in-from-bottom-20 duration-[1200ms]">
                    <div className="flex items-center gap-3 mb-4 text-[11px] font-bold uppercase tracking-[0.3em] text-white/30">
-                      <Link href="/meta" className="hover:text-primary transition-colors">Meta</Link>
+                      <Link href="/tier-list" className="hover:text-primary transition-colors">Meta</Link>
                       <ChevronRight className="w-3 h-3" />
+
                       <span className="text-primary/70">Campeões</span>
                       <ChevronRight className="w-3 h-3 text-primary/40" />
                       <span className="text-white/60">{champion.name}</span>

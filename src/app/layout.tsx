@@ -5,6 +5,7 @@ import Link from "next/link";
 import BackgroundParticles from "@/components/BackgroundParticles";
 
 import UserNav from "@/components/UserNav";
+import UpdateModal from "@/components/UpdateModal";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ['400', '700', '900'] });
 
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
   title: "META DIFF | Elite LoL Analytics",
   description: "Dominando o Summoner's Rift com a estética Nova.",
 };
+
 
 export default function RootLayout({
   children,
@@ -21,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="pt-br" className="dark scroll-smooth">
       <body className={`${montserrat.className} selection:bg-primary/30 text-digital min-h-screen relative overflow-x-hidden bg-void`}>
+        <UpdateModal />
         <div className="bg-nova pointer-events-none">
+
           <div className="nova-blob blob-1" />
           <div className="nova-blob blob-2" />
         </div>
@@ -38,9 +42,11 @@ export default function RootLayout({
 
             <div className="flex items-center gap-6 sm:gap-8">
               {[
-                { name: 'Tier List', href: '/tier-list' },
                 { name: 'Início', href: '/' },
+                { name: 'Tier List', href: '/tier-list' },
+                { name: 'Notas do Patch', href: '/patch-notes' },
               ].map((item) => (
+
                 <Link
                   key={item.name}
                   href={item.href}

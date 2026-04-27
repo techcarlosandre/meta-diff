@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, Sword, BarChart3, User, Zap, Menu, X } from 'lucide-react';
+import { Shield, Sword, BarChart3, User, Zap, Menu, X, Activity } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Navbar() {
@@ -10,9 +10,12 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'INÍCIO', href: '/', icon: Sword },
-    { name: 'META GLOBAL', href: '/meta', icon: BarChart3 },
+    { name: 'META GLOBAL', href: '/tier-list', icon: BarChart3 },
+    { name: 'NOTAS DO PATCH', href: '/patch-notes', icon: Activity },
     { name: 'SIMULADOR', href: '/champion/Aatrox', icon: Zap }, // Example link
   ];
+
+
 
   return (
     <nav className="fixed top-0 left-0 w-full z-[100] px-6 py-6 pointer-events-none">
