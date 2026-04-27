@@ -5,7 +5,9 @@ import {
   Trophy, TrendingUp, Search, 
   Activity, Star, Zap, Shield, Flame
 } from 'lucide-react';
+import Image from 'next/image';
 import { supabase } from '@/utils/supabase';
+
 
 export default function MetaPage() {
   const [allChamps, setAllChamps] = useState<any[]>([]);
@@ -226,13 +228,16 @@ export default function MetaPage() {
                           <div className={`absolute -top-10 -right-10 w-32 h-32 blur-3xl opacity-0 group-hover/card:opacity-20 transition-opacity duration-700 ${settings.bg}`}></div>
                           
                           <div className="flex items-center gap-5 relative z-10">
-                            <div className={`w-20 h-20 rounded-[1.8rem] border-2 border-white/10 overflow-hidden shadow-lg transform transition-all duration-700 group-hover/card:scale-110 group-hover/card:${settings.border} group-hover/card:rotate-2`}>
-                               <img 
-                                src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champ.image.full}`} 
-                                className="w-full h-full object-cover transform group-hover/card:scale-125 transition-transform duration-1000" 
-                                alt={champ.name} 
-                               />
-                            </div>
+                             <div className={`w-20 h-20 rounded-[1.8rem] border-2 border-white/10 overflow-hidden shadow-lg transform transition-all duration-700 group-hover/card:scale-110 group-hover/card:${settings.border} group-hover/card:rotate-2`}>
+                                <Image 
+                                 src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${champ.image.full}`} 
+                                 width={80}
+                                 height={80}
+                                 className="w-full h-full object-cover transform group-hover/card:scale-125 transition-transform duration-1000" 
+                                 alt={champ.name} 
+                                />
+                             </div>
+
                             <div className="flex flex-col justify-center">
                                <h3 className="text-2xl font-black text-white italic tracking-tighter group-hover/card:text-glow-white transition-all duration-300">
                                  {champ.name}

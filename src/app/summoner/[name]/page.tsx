@@ -237,7 +237,8 @@ export default function SummonerPage() {
             </div>
 
             {/* RIGHT: MATCH TILES */}
-            <div className="lg:col-span-8 space-y-6 relative min-h-[400px] optimize-render">
+            <div className="lg:col-span-8 space-y-6 relative min-h-[400px]">
+
 
               <div className="flex items-center justify-between px-4 mb-2">
                  <h3 className="text-[10px] font-black text-muted uppercase tracking-[0.4em]">Histórico de Batalha</h3>

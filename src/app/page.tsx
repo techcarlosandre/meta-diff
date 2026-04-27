@@ -467,7 +467,8 @@ export default function Home() {
             <div className="h-1 w-20 bg-gradient-to-r from-primary to-secondary mt-4 rounded-full"></div>
           </div>
 
-          <div className="nova-glass rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl relative optimize-render">
+          <div className="nova-glass rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl relative">
+
 
             {/* Table Header */}
             <div className="hidden lg:grid grid-cols-12 gap-4 px-10 py-6 border-b border-white/5 bg-white/2 opacity-40 text-[9px] font-black uppercase tracking-[0.2em] text-white">
