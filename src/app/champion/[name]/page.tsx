@@ -508,8 +508,8 @@ export default function ChampionPage() {
                                  </div>
                                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                     {allChamps.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => (
-                                       <div key={c.id} onClick={() => { router.push(`/champion/${c.id}`); setShowMainList(false); }} className="relative group/box cursor-pointer w-full aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all duration-500">
-                                          <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${c.image.full}`} className="w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" alt="" />
+                                       <div key={c.id} onClick={() => { router.push(`/champion/${c.id}`); setShowMainList(false); }} className="relative group/box cursor-pointer w-full h-0 pb-[100%] rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all duration-500">
+                                          <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${c.image.full}`} className="absolute inset-0 w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" alt="" />
                                        </div>
                                     ))}
                                  </div>
@@ -562,13 +562,15 @@ export default function ChampionPage() {
                                     />
                                  </div>
                                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                                     <div onClick={() => { setOpponent(null); setShowMatchupList(false); }} className="relative group/box cursor-pointer w-full aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-red-500 flex flex-col items-center justify-center bg-white/5 transition-all duration-500">
-                                        <X className="text-red-500/40 group-hover/box:text-red-500 w-5 h-5 transition-colors" />
-                                        <span className="text-[6px] font-black text-white/20 mt-1 uppercase">Remover</span>
+                                     <div onClick={() => { setOpponent(null); setShowMatchupList(false); }} className="relative group/box cursor-pointer w-full h-0 pb-[100%] rounded-xl overflow-hidden border border-white/5 hover:border-red-500 bg-white/5 transition-all duration-500">
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                           <X className="text-red-500/40 group-hover/box:text-red-500 w-5 h-5 transition-colors" />
+                                           <span className="text-[6px] font-black text-white/20 mt-1 uppercase">Remover</span>
+                                        </div>
                                      </div>
                                     {allChamps.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => (
-                                       <div key={c.id} onClick={() => { setOpponent(c); setShowMatchupList(false); }} className="relative group/box cursor-pointer w-full aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all duration-500">
-                                          <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${c.image.full}`} className="w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" alt="" />
+                                       <div key={c.id} onClick={() => { setOpponent(c); setShowMatchupList(false); }} className="relative group/box cursor-pointer w-full h-0 pb-[100%] rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all duration-500">
+                                          <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${c.image.full}`} className="absolute inset-0 w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" alt="" />
                                        </div>
                                     ))}
                                  </div>
