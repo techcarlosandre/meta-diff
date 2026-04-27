@@ -197,8 +197,10 @@ export default function MetaPage() {
             return (
               <div key={tier} className="relative group/tier animate-fade-in-up">
                 <div className="flex items-center gap-6 mb-10">
-                   <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center text-3xl sm:text-4xl font-black italic border-[3px] shadow-2xl transform group-hover/tier:rotate-3 transition-all duration-700 ${settings.bg} ${settings.border} ${settings.color} drop-shadow-[0_0_20px_rgba(var(--primary-glow),0.3)]`}>
-                     {tier === '-' ? '?' : tier}
+                   <div className="relative shrink-0">
+                      <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center text-3xl sm:text-4xl font-black italic border-[3px] shadow-2xl transform group-hover/tier:rotate-3 transition-all duration-700 ${settings.bg} ${settings.border} ${settings.color} drop-shadow-[0_0_20px_rgba(var(--primary-glow),0.3)] shrink-0 aspect-square`}>
+                        {tier === '-' ? '?' : tier}
+                      </div>
                    </div>
                    <div className="space-y-2">
                       <h2 className={`text-2xl sm:text-4xl font-black italic tracking-tighter uppercase ${settings.color}`}>
