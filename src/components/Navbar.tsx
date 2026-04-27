@@ -1,12 +1,31 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, Sword, BarChart3, User, Zap, Menu, X, Activity } from 'lucide-react';
-import { useState } from 'react';
+import { Shield, Sword, BarChart3, User, Zap, Menu, X, Activity, LogOut, UserCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/utils/supabase';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  };
 
   const navLinks = [
     { name: 'INÍCIO', href: '/', icon: Sword },
@@ -35,7 +54,7 @@ export default function Navbar() {
            </div>
         </Link>
 
-        {/* LINKS (Desktop - com overflow-hidden apenas aqui) */}
+        {/* LINKS (Desktop) */}
         <div className={`
           hidden md:flex items-center transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden
           ${isOpen ? 'opacity-100 ml-10 max-w-xl' : 'opacity-0 ml-0 max-w-0'}
@@ -58,12 +77,31 @@ export default function Navbar() {
             
             <div className="w-[1px] h-4 bg-white/10 mx-2"></div>
 
-            <Link 
-              href="/login" 
-              className="px-5 py-2 bg-primary/10 border border-primary/30 rounded-xl text-[9px] font-black text-primary uppercase tracking-widest hover:bg-primary hover:text-void transition-all"
-            >
-              ENTRAR
-            </Link>
+            {user ? (
+               <div className="flex items-center gap-3">
+                 <Link 
+                  href="/profile" 
+                  className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${pathname === '/profile' ? 'bg-primary text-void' : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'}`}
+                 >
+                   <UserCircle className="w-3.5 h-3.5" />
+                   PERFIL
+                 </Link>
+                 <button 
+                  onClick={handleLogout}
+                  className="p-2 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                  title="Sair"
+                 >
+                   <LogOut className="w-4 h-4" />
+                 </button>
+               </div>
+            ) : (
+               <Link 
+                href="/login" 
+                className="px-5 py-2 bg-primary/10 border border-primary/30 rounded-xl text-[9px] font-black text-primary uppercase tracking-widest hover:bg-primary hover:text-void transition-all"
+               >
+                 ENTRAR
+               </Link>
+            )}
           </div>
         </div>
 
@@ -75,7 +113,7 @@ export default function Navbar() {
           {isOpen ? <X className="w-5 h-5 text-primary" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* MOBILE DROPDOWN (Fora do overflow-hidden) */}
+        {/* MOBILE DROPDOWN */}
         {isOpen && (
           <div className="md:hidden absolute top-full left-1/2 -translate-x-1/2 w-[calc(100vw-2rem)] max-w-[350px] mt-4 bg-surface/95 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-6 flex flex-col gap-5 animate-in fade-in slide-in-from-top-2 shadow-3xl z-50">
              {navLinks.map((link) => (
@@ -90,13 +128,33 @@ export default function Navbar() {
                </Link>
              ))}
              <div className="h-[1px] w-full bg-white/5"></div>
-             <Link 
-              href="/login" 
-              onClick={() => setIsOpen(false)}
-              className="w-full py-4 bg-primary text-void text-center rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20"
-             >
-               ENTRAR NA CONTA
-             </Link>
+             
+             {user ? (
+                <div className="flex flex-col gap-3">
+                  <Link 
+                    href="/profile" 
+                    onClick={() => setIsOpen(false)}
+                    className="w-full py-4 bg-primary text-void text-center rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3"
+                  >
+                    <UserCircle className="w-4 h-4" />
+                    MEU PERFIL
+                  </Link>
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full py-4 bg-red-500/20 border border-red-500/40 text-red-400 text-center rounded-2xl font-black text-[10px] uppercase tracking-widest"
+                  >
+                    SAIR DA CONTA
+                  </button>
+                </div>
+             ) : (
+                <Link 
+                  href="/login" 
+                  onClick={() => setIsOpen(false)}
+                  className="w-full py-4 bg-primary text-void text-center rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20"
+                >
+                  ENTRAR NA CONTA
+                </Link>
+             )}
           </div>
         )}
       </div>
