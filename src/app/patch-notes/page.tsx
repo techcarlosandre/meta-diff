@@ -23,39 +23,39 @@ export default function PatchNotesPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-6 pb-40 animate-nova-in">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-40 animate-nova-in pt-32 md:pt-40">
       {/* Header Compacto Premium */}
-      <section className="relative glass-card border border-white/5 p-8 sm:p-12 rounded-3xl mb-12 overflow-hidden text-center mt-12 group">
+      <section className="relative glass-card border border-white/5 p-6 sm:p-12 rounded-[2.5rem] mb-12 overflow-hidden text-center group">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-50"></div>
         <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/20 transition-all duration-1000"></div>
         
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-void/40 border border-white/10 text-[9px] font-black text-primary uppercase tracking-[0.4em] mb-8">
+          <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-void/40 border border-white/10 text-[8px] sm:text-[9px] font-black text-primary uppercase tracking-[0.3em] mb-8">
             <Zap className="w-3 h-3 animate-pulse" /> Sincronia de Dados Riot Ativa
           </div>
           
-          <h1 className="text-5xl sm:text-7xl font-black text-white italic tracking-tighter uppercase mb-4 leading-none">
+          <h1 className="text-4xl sm:text-7xl font-black text-white italic tracking-tighter uppercase mb-4 leading-none">
             Patch <span className="text-primary drop-shadow-glow">{CURRENT_PATCH}</span>
           </h1>
           
-          <p className="text-muted font-bold text-[10px] uppercase tracking-[0.5em] opacity-40 max-w-lg mx-auto">
+          <p className="text-muted font-bold text-[8px] sm:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.5em] opacity-40 max-w-lg mx-auto px-4">
             Inteligência tática sobre as alterações de equilíbrio global
           </p>
           
-          <div className="flex items-center justify-center gap-10 mt-12">
+          <div className="flex items-center justify-center gap-4 sm:gap-10 mt-10 sm:mt-12">
             <div className="flex flex-col items-center group/stat">
-               <div className="text-2xl font-black text-emerald-400 italic group-hover:scale-110 transition-transform">+{patchData.buffs.length}</div>
-               <div className="text-[8px] font-black text-white/20 uppercase tracking-[0.3em] mt-1">Fortalecidos</div>
+               <div className="text-xl sm:text-2xl font-black text-emerald-400 italic group-hover:scale-110 transition-transform">+{patchData.buffs.length}</div>
+               <div className="text-[7px] sm:text-[8px] font-black text-white/20 uppercase tracking-[0.3em] mt-1">Buffs</div>
             </div>
-            <div className="w-[1px] h-8 bg-white/5"></div>
+            <div className="w-[1px] h-6 sm:h-8 bg-white/5"></div>
             <div className="flex flex-col items-center group/stat">
-               <div className="text-2xl font-black text-red-500 italic group-hover:scale-110 transition-transform">-{patchData.nerfs.length}</div>
-               <div className="text-[8px] font-black text-white/20 uppercase tracking-[0.3em] mt-1">Enfraquecidos</div>
+               <div className="text-xl sm:text-2xl font-black text-red-500 italic group-hover:scale-110 transition-transform">-{patchData.nerfs.length}</div>
+               <div className="text-[7px] sm:text-[8px] font-black text-white/20 uppercase tracking-[0.3em] mt-1">Nerfs</div>
             </div>
-            <div className="w-[1px] h-8 bg-white/5"></div>
+            <div className="w-[1px] h-6 sm:h-8 bg-white/5"></div>
             <div className="flex flex-col items-center group/stat">
-               <div className="text-2xl font-black text-sky-400 italic group-hover:scale-110 transition-transform">{patchData.adjustments.length}</div>
-               <div className="text-[8px] font-black text-white/20 uppercase tracking-[0.3em] mt-1">Ajustados</div>
+               <div className="text-xl sm:text-2xl font-black text-sky-400 italic group-hover:scale-110 transition-transform">{patchData.adjustments.length}</div>
+               <div className="text-[7px] sm:text-[8px] font-black text-white/20 uppercase tracking-[0.3em] mt-1">Ajustes</div>
             </div>
           </div>
         </div>

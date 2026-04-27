@@ -5,12 +5,10 @@ import { formatChampName, formatDisplayName } from '@/utils/riot';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase';
 import {
-   Lock, User, Shield, Sword, Zap, Brain, ChevronRight, Star, Target, TrendingUp,
+    Lock, User, Shield, Sword, Zap, Brain, ChevronRight, Star, Target, TrendingUp,
    Lightbulb, Plus, Sparkles, Activity,
    Trophy, Ghost, Flame, AlertTriangle, X
 } from 'lucide-react';
-
-
 
 let RUNES_CACHE: any[] | null = null;
 let ALL_CHAMPS_CACHE: any[] | null = null;
@@ -51,7 +49,6 @@ export default function ChampionPage() {
    const [isFavorite, setIsFavorite] = useState(false);
    const [favLoading, setFavLoading] = useState(false);
 
-   
    const getStatColor = (val: any, type: 'win' | 'pick' | 'ban') => {
       if (val === undefined || val === null) return 'text-white/20';
       const num = typeof val === 'string' ? parseFloat(val.replace(',', '.').replace('%', '')) : val;
@@ -83,13 +80,11 @@ export default function ChampionPage() {
 
    useEffect(() => {
       if (opponent && champion && buildData) {
-         // Verifica se o oponente é um Counter (Ameaça) real
          const isCounter = buildData.counters.some((c: string) => 
             c.toLowerCase().includes(opponent.name.toLowerCase()) || 
             opponent.name.toLowerCase().includes(c.toLowerCase())
          );
 
-         // Verifica se o oponente é uma Sinergia (Parceiro ideal)
          const isSynergy = buildData.synergies.some((s: string) => 
             s.toLowerCase().includes(opponent.name.toLowerCase()) || 
             opponent.name.toLowerCase().includes(s.toLowerCase())
@@ -114,7 +109,6 @@ export default function ChampionPage() {
          setMatchupResult(null);
       }
    }, [opponent, champion, buildData]);
-
 
    useEffect(() => {
       async function fetchData() {
@@ -168,12 +162,10 @@ export default function ChampionPage() {
       fetchData();
    }, [champId]);
 
-   // Gerenciar estado de Favorito
    useEffect(() => {
       supabase.auth.getUser().then(({ data: { user } }) => {
          setUser(user);
          if (user) {
-            console.log("Usuário detectado:", user.email);
             supabase
                .from('favorites')
                .select('id')
@@ -423,46 +415,46 @@ export default function ChampionPage() {
                   >
                      <X className="w-4 h-4" />
                   </button>
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative">
-                     {(
-                        [
-                           { label: 'Vitória', val: buildData?.winRate, color: getStatColor(buildData?.winRate, 'win'), icon: TrendingUp },
-                           { label: 'Pick', val: buildData?.pickRate, color: 'text-white', icon: Activity },
-                           { label: 'Ban', val: buildData?.banRate, color: getStatColor(buildData?.banRate, 'ban'), icon: Target },
-                           { label: 'Tier', val: buildData?.tier || 'A', color: 'text-void', special: true }
-                        ] as Array<{ label: string, val: any, color: string, icon?: any, special?: boolean }>
-                     ).map((s, i) => {
-                        const Icon = s.icon;
-                        return (
-                           <div key={i} className={`group relative ${s.special ? getTierColor(s.val) : 'glass-card'} scanline-effect p-4 sm:p-5 rounded-3xl flex flex-col items-center justify-center transition-all hover:-translate-y-2 cursor-default overflow-hidden`}>
-                              {s.special ? (
-                                 <>
-                                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
-                                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.5em] mb-2 opacity-60 text-center">Status</span>
-                                    <span className="text-2xl sm:text-4xl font-display font-bold italic tracking-tighter uppercase drop-shadow-2xl">
-                                       {buildLoading || (s.val === undefined || s.val === null) ? <div className="w-8 h-8 bg-white/10 animate-pulse rounded-lg"></div> : s.val}
-                                    </span>
-                                 </>
-                              ) : (
-                                 <>
-                                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-10 group-hover:opacity-30 transition-all group-hover:scale-110">
-                                       {Icon && <Icon className="w-4 h-4" />}
-                                    </div>
-                                    <div className={`text-xl sm:text-3xl font-display font-bold italic tracking-tighter ${s.color}`}>
-                                       {buildLoading || !s.val ? <div className="w-14 h-6 bg-white/10 animate-pulse rounded-lg"></div> : formatRate(s.val) + '%'}
-                                    </div>
-                                    <div className="text-[7px] sm:text-[9px] font-black text-white/30 uppercase tracking-[0.5em] mt-3 sm:mt-4 border-t border-white/5 pt-2 sm:pt-3 w-full text-center">
-                                       {s.label}
-                                    </div>
-                                 </>
-                              )}
-                           </div>
-                        );
-                     })}
-                  </div>
                </div>
             )}
             
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative">
+               {(
+                  [
+                     { label: 'Vitória', val: buildData?.winRate, color: getStatColor(buildData?.winRate, 'win'), icon: TrendingUp },
+                     { label: 'Pick', val: buildData?.pickRate, color: 'text-white', icon: Activity },
+                     { label: 'Ban', val: buildData?.banRate, color: getStatColor(buildData?.banRate, 'ban'), icon: Target },
+                     { label: 'Tier', val: buildData?.tier || 'A', color: 'text-void', special: true }
+                  ] as Array<{ label: string, val: any, color: string, icon?: any, special?: boolean }>
+               ).map((s, i) => {
+                  const Icon = s.icon;
+                  return (
+                     <div key={i} className={`group relative ${s.special ? getTierColor(s.val) : 'glass-card'} scanline-effect p-4 sm:p-5 rounded-3xl flex flex-col items-center justify-center transition-all hover:-translate-y-2 cursor-default overflow-hidden`}>
+                        {s.special ? (
+                           <>
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                              <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.5em] mb-2 opacity-60 text-center">Status</span>
+                              <span className="text-2xl sm:text-4xl font-display font-bold italic tracking-tighter uppercase drop-shadow-2xl">
+                                 {buildLoading || (s.val === undefined || s.val === null) ? <div className="w-8 h-8 bg-white/10 animate-pulse rounded-lg"></div> : s.val}
+                              </span>
+                           </>
+                        ) : (
+                           <>
+                              <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-10 group-hover:opacity-30 transition-all group-hover:scale-110">
+                                 {Icon && <Icon className="w-4 h-4" />}
+                              </div>
+                              <div className={`text-xl sm:text-3xl font-display font-bold italic tracking-tighter ${s.color}`}>
+                                 {buildLoading || !s.val ? <div className="w-14 h-6 bg-white/10 animate-pulse rounded-lg"></div> : formatRate(s.val) + '%'}
+                              </div>
+                              <div className="text-[7px] sm:text-[9px] font-black text-white/30 uppercase tracking-[0.5em] mt-3 sm:mt-4 border-t border-white/5 pt-2 sm:pt-3 w-full text-center">
+                                 {s.label}
+                              </div>
+                           </>
+                        )}
+                     </div>
+                  );
+               })}
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative mt-12">
                <div className="lg:col-span-8 space-y-8">
@@ -501,6 +493,28 @@ export default function ChampionPage() {
                            <div className="absolute -bottom-3 inset-x-0 flex justify-center">
                               <div className="px-4 py-1 bg-primary text-void text-[8px] sm:text-[10px] font-black uppercase tracking-widest rounded-full shadow-glow">Main</div>
                            </div>
+
+                           {showMainList && (
+                              <div className="absolute top-[130%] left-1/2 -translate-x-1/2 w-[280px] sm:w-[350px] glass-card rounded-[2rem] p-4 sm:p-6 z-[999] shadow-[0_0_100px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-500 border-t-primary/30 h-max">
+                                 <div className="flex items-center gap-3 mb-4 sm:mb-6 bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5 focus-within:border-primary focus-within:bg-white/10 transition-all">
+                                    <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                                    <input
+                                       type="text"
+                                       placeholder="TROCAR..."
+                                       value={searchTerm}
+                                       onChange={e => setSearchTerm(e.target.value)}
+                                       className="bg-transparent border-none w-full text-[10px] sm:text-xs text-white outline-none placeholder:text-white/10 font-bold uppercase tracking-widest"
+                                    />
+                                 </div>
+                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {allChamps.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => (
+                                       <div key={c.id} onClick={() => { router.push(`/champion/${c.id}`); setShowMainList(false); }} className="relative group/box cursor-pointer w-full aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all duration-500 shrink-0">
+                                          <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${c.image.full}`} className="w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" alt="" />
+                                       </div>
+                                    ))}
+                                 </div>
+                              </div>
+                           )}
                         </div>
 
                         <div className="flex flex-col items-center">
@@ -535,28 +549,6 @@ export default function ChampionPage() {
                               </>
                            )}
 
-                               {showMainList && (
-                              <div className="absolute top-[130%] left-1/2 -translate-x-1/2 w-[280px] sm:w-[350px] glass-card rounded-[2rem] p-4 sm:p-6 z-[999] shadow-[0_0_100px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-500 border-t-primary/30 h-max">
-                                 <div className="flex items-center gap-3 mb-4 sm:mb-6 bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5 focus-within:border-primary focus-within:bg-white/10 transition-all">
-                                    <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-                                    <input
-                                       type="text"
-                                       placeholder="TROCAR..."
-                                       value={searchTerm}
-                                       onChange={e => setSearchTerm(e.target.value)}
-                                       className="bg-transparent border-none w-full text-[10px] sm:text-xs text-white outline-none placeholder:text-white/10 font-bold uppercase tracking-widest"
-                                    />
-                                 </div>
-                                 <div className="grid grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                                    {allChamps.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => (
-                                       <div key={c.id} onClick={() => { router.push(`/champion/${c.id}`); setShowMainList(false); }} className="relative group/box cursor-pointer w-full aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-primary transition-all duration-500 shrink-0">
-                                          <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${c.image.full}`} className="w-full h-full object-cover grayscale group-hover/box:grayscale-0 transition-all scale-110 group-hover/box:scale-100" alt="" />
-                                       </div>
-                                    ))}
-                                 </div>
-                              </div>
-                           )}
-
                            {showMatchupList && (
                               <div className="absolute top-[130%] left-1/2 -translate-x-1/2 w-[280px] sm:w-[350px] glass-card rounded-[2rem] p-4 sm:p-6 z-[999] shadow-[0_0_100px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-500 border-t-primary/30 h-max">
                                  <div className="flex items-center gap-3 mb-4 sm:mb-6 bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5 focus-within:border-primary focus-within:bg-white/10 transition-all">
@@ -569,7 +561,7 @@ export default function ChampionPage() {
                                        className="bg-transparent border-none w-full text-[10px] sm:text-xs text-white outline-none placeholder:text-white/10 font-bold uppercase tracking-widest"
                                     />
                                  </div>
-                                 <div className="grid grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                      <div onClick={() => { setOpponent(null); setShowMatchupList(false); }} className="relative group/box cursor-pointer w-full aspect-square rounded-xl overflow-hidden border border-white/5 hover:border-red-500 flex flex-col items-center justify-center bg-white/5 transition-all duration-500 shrink-0">
                                         <X className="text-red-500/40 group-hover/box:text-red-500 w-5 h-5 transition-colors" />
                                         <span className="text-[6px] font-black text-white/20 mt-1 uppercase">Remover</span>
@@ -643,7 +635,7 @@ export default function ChampionPage() {
                                </div>
                             ) : (
                                <p className="text-lg sm:text-xl font-black italic text-white/90 leading-[1.2]">
-                                  "{buildData?.draftAdvice}"
+                                  &quot;{buildData?.draftAdvice}&quot;
                                 </p>
                             )}
                          </div>
@@ -661,8 +653,8 @@ export default function ChampionPage() {
                                </div>
                             ) : (
                                <p className="text-md sm:text-lg font-medium italic text-white/50 leading-relaxed group-hover/card:text-white transition-colors duration-500">
-                                  "{buildData?.ingameAdvice}"
-                               </p>
+                                  &quot;{buildData?.ingameAdvice}&quot;
+                                </p>
                             )}
                          </div>
                      </div>
@@ -682,7 +674,7 @@ export default function ChampionPage() {
                                   if (!cData) return null;
                                   return (
                                      <Link key={cName} href={`/champion/${cData.id}`} className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-red-500/30 group/counter hover:border-red-400 transition-all cursor-pointer shadow-lg block shrink-0">
-                                        <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${cData.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale opacity-60 group-hover/counter:grayscale-0 group-hover/counter:opacity-100 transition-all group-hover/counter:scale-110" alt="" />
+                                        <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${cData.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale opacity-60 group-hover/counter:grayscale-0 group-hover/counter:opacity-100 transition-all group-hover/counter:scale-110" alt="" />
                                         <div className="absolute inset-0 bg-red-500/20 mix-blend-overlay group-hover/counter:opacity-0 transition-all"></div>
                                      </Link>
                                   );
@@ -703,7 +695,7 @@ export default function ChampionPage() {
                                   if (!cData) return null;
                                   return (
                                      <Link key={cName} href={`/champion/${cData.id}`} className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-emerald-500/30 group/synergy hover:border-emerald-400 transition-all cursor-pointer shadow-lg block shrink-0">
-                                        <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/champion/${cData.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale opacity-60 group-hover/synergy:grayscale-0 group-hover/synergy:opacity-100 transition-all group-hover/synergy:scale-110" alt="" />
+                                        <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/champion/${cData.image.full}`} width={64} height={64} className="w-full h-full object-cover grayscale opacity-60 group-hover/synergy:grayscale-0 group-hover/synergy:opacity-100 transition-all group-hover/synergy:scale-110" alt="" />
                                         <div className="absolute inset-0 bg-emerald-500/20 mix-blend-overlay group-hover/synergy:opacity-0 transition-all"></div>
                                      </Link>
                                   );
@@ -766,7 +758,7 @@ export default function ChampionPage() {
                               <div className="flex gap-2 flex-wrap justify-center">
                                  {buildData?.core.filter((id: number) => ![3006, 3009, 3020, 3047, 3111, 3117, 3158].includes(id)).slice(3, 6).map((id: number, i: number) => (
                                     <div key={i} className="w-12 h-12 sm:w-16 sm:h-16 bg-void/50 rounded-xl border border-white/10 hover:border-primary/40 overflow-hidden transition-all duration-300 shrink-0">
-                                       <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/item/${id}.png`} width={64} height={64} className="w-full h-full object-cover" alt="" />
+                                       <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/item/${id}.png`} width={64} height={64} className="w-full h-full object-cover" alt="" />
                                        <div className="absolute inset-x-0 bottom-0 h-1 bg-white/10"></div>
                                     </div>
                                  ))}
@@ -782,7 +774,7 @@ export default function ChampionPage() {
                               <div className="flex gap-2">
                                  {buildData?.core.filter((id: number) => [3006, 3009, 3020, 3047, 3111, 3117, 3158].includes(id)).map((id: number, i: number) => (
                                     <div key={i} className="w-12 h-12 bg-secondary/5 rounded-xl border border-secondary/20 flex items-center justify-center p-1.5 shadow-glow-amber">
-                                       <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/item/${id}.png`} width={48} height={48} className="w-full h-full object-contain rounded-lg" alt="Item" />
+                                       <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/item/${id}.png`} width={48} height={48} className="w-full h-full object-contain rounded-lg" alt="Item" />
                                     </div>
                                  ))}
                               </div>
@@ -793,7 +785,7 @@ export default function ChampionPage() {
                               <div className="flex gap-2">
                                  {buildData?.summoners.map((id: number, i: number) => (
                                     <div key={i} className="w-10 h-10 bg-void rounded-lg border border-white/5 overflow-hidden hover:border-primary/40 transition-all">
-                                       <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/spell/${getSpellName(id)}.png`} width={40} height={40} className="w-full h-full object-cover" alt="Spell" />
+                                       <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/spell/${getSpellName(id)}.png`} width={40} height={40} className="w-full h-full object-cover" alt="Spell" />
                                     </div>
                                  ))}
                               </div>
@@ -872,25 +864,25 @@ export default function ChampionPage() {
                               {(() => {
                                  const ability = activeSkill === 'P' ? { ...champion.passive, isPassive: true } : champion.spells[activeSkill === 'Q' ? 0 : activeSkill === 'W' ? 1 : activeSkill === 'E' ? 2 : 3];
                                  return (
-                                    <div className={`bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-10 shadow-inner relative group/analysis hover:border-primary/30 transition-all duration-700 flex flex-col h-full ${buildLoading ? 'animate-pulse' : ''}`}>
-                                       <div className="flex items-center justify-between mb-8 shrink-0">
+                                    <div className={`bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-6 sm:p-10 shadow-inner relative group/analysis hover:border-primary/30 transition-all duration-700 flex flex-col h-full ${buildLoading ? 'animate-pulse' : ''}`}>
+                                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 shrink-0">
                                           <div className="flex items-center gap-4">
-                                             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-glow">
-                                                <Brain className="w-6 h-6 text-primary" />
+                                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-glow">
+                                                <Brain className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                                              </div>
                                              <div>
-                                                <span className="text-[14px] font-black text-white uppercase tracking-[0.4em] block">{activeSkill === 'P' ? 'Intrinsic System' : `Ability Node ${activeSkill}`}</span>
-                                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{ability.name}</span>
+                                                <span className="text-[12px] sm:text-[14px] font-black text-white uppercase tracking-[0.4em] block leading-tight">{activeSkill === 'P' ? 'Intrinsic System' : `Ability Node ${activeSkill}`}</span>
+                                                <span className="text-[9px] sm:text-[10px] font-black text-primary uppercase tracking-[0.2em]">{ability.name}</span>
                                              </div>
                                           </div>
-                                          <div className="flex gap-8">
-                                             <div className="text-right">
+                                          <div className="flex gap-6 sm:gap-8 bg-void/30 p-4 sm:p-0 rounded-2xl border border-white/5 sm:border-none">
+                                             <div className="flex-1 sm:text-right">
                                                 <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-1">Custo</div>
-                                                <div className="text-white font-bold text-sm tracking-tight">{ability.isPassive ? 'Passiva' : ability.costBurn || 'Sem Custo'}</div>
+                                                <div className="text-white font-bold text-xs sm:text-sm tracking-tight">{ability.isPassive ? 'Passiva' : ability.costBurn || 'Sem Custo'}</div>
                                              </div>
-                                             <div className="text-right">
+                                             <div className="flex-1 sm:text-right">
                                                 <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-1">Recarga</div>
-                                                <div className="text-white font-bold text-sm tracking-tight">{ability.isPassive ? 'N/A' : `${ability.cooldownBurn || 0}s`}</div>
+                                                <div className="text-white font-bold text-xs sm:text-sm tracking-tight">{ability.isPassive ? 'N/A' : `${ability.cooldownBurn || 0}s`}</div>
                                              </div>
                                           </div>
                                        </div>
@@ -906,48 +898,45 @@ export default function ChampionPage() {
                            </div>
                         </div>
 
-                        <div className="w-full pt-12 border-t border-white/5 space-y-8">
-                           <div className="flex gap-2 ml-[84px]">
-                              {Array.from({ length: 18 }).map((_, i) => (
-                                 <div key={i} className="w-9 text-center text-[10px] font-black text-white/20 uppercase tracking-widest">{i + 1}</div>
-                              ))}
-                           </div>
-                           <div className="flex flex-col gap-4">
-                              {['P', 'Q', 'W', 'E', 'R'].map((key) => {
-                                 const isPassive = key === 'P';
-                                 const spell = isPassive ? champion.passive : champion.spells[key === 'Q' ? 0 : key === 'W' ? 1 : key === 'E' ? 2 : 3];
-
-                                 return (
-                                    <div 
-                                       key={key} 
-                                       className={`flex items-center gap-12 group/prog-row transition-all duration-500 px-4 py-2 rounded-2xl ${hoveredSkill === key ? 'bg-primary/5 translate-x-4 border-l-2 border-primary' : 'hover:bg-white/[0.02]'}`} 
-                                       onClick={() => setActiveSkill(key)}
-                                       onMouseEnter={() => setHoveredSkill(key)}
-                                       onMouseLeave={() => setHoveredSkill(null)}
-                                    >
-                                       <div className="relative group/tooltip">
-                                          <div className="w-12 h-12 shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl hover:border-primary cursor-pointer transition-all duration-500 relative transform-gpu hover:scale-110">
-                                             <img src={`https://ddragon.leagueoflegends.com/cdn/15.1.1/img/${isPassive ? 'passive' : 'spell'}/${spell.image.full}`} width={48} height={48} className="w-full h-full object-cover" alt={spell.name} />
-                                             <div className="absolute top-0 right-0 bg-void/90 px-2 py-0.5 text-[9px] font-black text-primary border-b border-l border-white/10 rounded-bl-lg">{key}</div>
-                                          </div>
-                                          <div className="absolute bottom-full left-0 mb-4 w-80 glass-card p-6 rounded-2xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 z-[999] shadow-[0_0_50px_rgba(0,0,0,0.8)] pointer-events-none border border-white/10">
-                                             <div className="text-primary font-display font-bold uppercase text-xs tracking-[0.4em] mb-3">{spell.name}</div>
-                                             <div className="text-[12px] text-white/60 leading-relaxed" dangerouslySetInnerHTML={{ __html: (spell.description || '').replace(/'/g, '&apos;').replace(/(<([^>]+)>)/gi, "") }}></div>
-                                          </div>
-                                       </div>
-                                       {isPassive ? (
-                                          <div className="flex-1 flex items-center">
-                                             <div className="h-[1px] w-full bg-gradient-to-r from-white/10 via-white/5 to-transparent relative">
-                                                <div className="absolute -top-3 left-0 text-[9px] text-white/20 uppercase tracking-[0.5em] font-black">Habilidade Inata (Sistema Base)</div>
+                        <div className="w-full pt-12 border-t border-white/5 space-y-8 overflow-x-auto custom-scrollbar pb-4">
+                           <div className="min-w-[700px] space-y-8">
+                              <div className="flex gap-2 ml-[84px]">
+                                 {Array.from({ length: 18 }).map((_, i) => (
+                                    <div key={i} className="w-9 text-center text-[10px] font-black text-white/20 uppercase tracking-widest">{i + 1}</div>
+                                 ))}
+                              </div>
+                              <div className="flex flex-col gap-4">
+                                 {['P', 'Q', 'W', 'E', 'R'].map((key) => {
+                                    const isPassive = key === 'P';
+                                    const spell = isPassive ? champion.passive : champion.spells[key === 'Q' ? 0 : key === 'W' ? 1 : key === 'E' ? 2 : 3];
+    
+                                    return (
+                                       <div 
+                                          key={key} 
+                                          className={`flex items-center gap-12 group/prog-row transition-all duration-500 px-4 py-2 rounded-2xl ${hoveredSkill === key ? 'bg-primary/5 translate-x-4 border-l-2 border-primary' : 'hover:bg-white/[0.02]'}`} 
+                                          onClick={() => setActiveSkill(key)}
+                                          onMouseEnter={() => setHoveredSkill(key)}
+                                          onMouseLeave={() => setHoveredSkill(null)}
+                                       >
+                                          <div className="relative group/tooltip">
+                                             <div className="w-12 h-12 shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl hover:border-primary cursor-pointer transition-all duration-500 relative transform-gpu hover:scale-110">
+                                                <img src={`https://ddragon.leagueoflegends.com/cdn/16.8.1/img/${isPassive ? 'passive' : 'spell'}/${spell.image.full}`} width={48} height={48} className="w-full h-full object-cover" alt={spell.name} />
+                                                <div className="absolute top-0 right-0 bg-void/90 px-2 py-0.5 text-[9px] font-black text-primary border-b border-l border-white/10 rounded-bl-lg">{key}</div>
                                              </div>
                                           </div>
-                                       ) : (
-                                          <div className="flex gap-2">
-                                             {buildData?.skills.map((s: string, lvIdx: number) => {
-                                                const isActive = s === key;
-                                                return (
-                                                   <div key={lvIdx} className={`w-9 h-9 rounded-xl flex items-center justify-center text-[11px] font-black transition-all duration-500 transform-gpu ${isActive ? (key === 'R' ? 'bg-secondary text-void shadow-glow-amber scale-110' : 'bg-primary text-void shadow-glow scale-105') : 'bg-white/[0.04] text-white/5 hover:bg-white/[0.1] hover:text-white/20'}`}>
-                                                      {isActive ? key : ''}
+                                          {isPassive ? (
+                                             <div className="flex-1 flex items-center">
+                                                <div className="h-[1px] w-full bg-gradient-to-r from-white/10 via-white/5 to-transparent relative">
+                                                   <div className="absolute -top-3 left-0 text-[9px] text-white/20 uppercase tracking-[0.5em] font-black whitespace-nowrap">Habilidade Inata (Sistema Base)</div>
+                                                </div>
+                                             </div>
+                                          ) : (
+                                             <div className="flex gap-2">
+                                                {buildData?.skills.map((s: string, lvIdx: number) => {
+                                                   const isActive = s === key;
+                                                   return (
+                                                      <div key={lvIdx} className={`w-9 h-9 rounded-xl flex items-center justify-center text-[11px] font-black transition-all duration-500 transform-gpu ${isActive ? (key === 'R' ? 'bg-secondary text-void shadow-glow-amber scale-110' : 'bg-primary text-void shadow-glow scale-105') : 'bg-white/[0.04] text-white/5 hover:bg-white/[0.1] hover:text-white/20'}`}>
+                                                         {isActive ? key : ''}
                                                    </div>
                                                 );
                                              })}
@@ -958,106 +947,106 @@ export default function ChampionPage() {
                               })}
                            </div>
                         </div>
-
                      </div>
-                  </section>
-               </div>
+                  </div>
+               </section>
+            </div>
 
-               <div className="lg:col-span-4 space-y-10">
-                  <section className="glass-card scanline-effect rounded-[2.5rem] p-10 text-center relative overflow-hidden group/runes">
-                     <div className="absolute -inset-20 bg-primary/5 blur-[150px] rounded-full opacity-0 group-hover/runes:opacity-100 transition-all duration-[2000ms]"></div>
-                     <h3 className="text-[14px] font-black text-primary uppercase tracking-[0.8em] mb-12 border-b border-white/5 pb-8 heading-font">Caminho Neural</h3>
+            <div className="lg:col-span-4 space-y-10">
+               <section className="glass-card scanline-effect rounded-[2.5rem] p-10 text-center relative overflow-hidden group/runes">
+                  <div className="absolute -inset-20 bg-primary/5 blur-[150px] rounded-full opacity-0 group-hover/runes:opacity-100 transition-all duration-[2000ms]"></div>
+                  <h3 className="text-[14px] font-black text-primary uppercase tracking-[0.8em] mb-12 border-b border-white/5 pb-8 heading-font">Caminho Neural</h3>
 
-                     <div className="space-y-16 flex flex-col items-center">
-                        <div className="w-full space-y-10">
-                           <div className="flex flex-col items-center gap-6">
-                              <div className="relative group/rune-main cursor-pointer">
-                                 <div className="absolute -inset-10 bg-primary/20 blur-[60px] rounded-full animate-pulse transition-all"></div>
-                                 <div className="relative w-24 h-24 rounded-full bg-void/90 flex items-center justify-center border-2 border-primary/40 shadow-glow transform-gpu group-hover/rune-main:scale-110 transition-all duration-700">
-                                    {buildData?.runes && Array.isArray(runesData) && runesData.find((t: any) => t.key === buildData?.runes.primaryTree) && (
-                                       <img src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find((t: any) => t.key === buildData?.runes.primaryTree).icon}`} width={64} height={64} className="w-16 h-16 object-contain z-10 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" alt="Rune" />
-                                    )}
-                                    <div className="absolute inset-0 scanline-effect rounded-full opacity-20"></div>
-                                 </div>
+                  <div className="space-y-16 flex flex-col items-center">
+                     <div className="w-full space-y-10">
+                        <div className="flex flex-col items-center gap-6">
+                           <div className="relative group/rune-main cursor-pointer">
+                              <div className="absolute -inset-10 bg-primary/20 blur-[60px] rounded-full animate-pulse transition-all"></div>
+                              <div className="relative w-24 h-24 rounded-full bg-void/90 flex items-center justify-center border-2 border-primary/40 shadow-glow transform-gpu group-hover/rune-main:scale-110 transition-all duration-700">
+                                 {buildData?.runes && Array.isArray(runesData) && runesData.find((t: any) => t.key === buildData?.runes.primaryTree) && (
+                                    <img src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find((t: any) => t.key === buildData?.runes.primaryTree).icon}`} width={64} height={64} className="w-16 h-16 object-contain z-10 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" alt="Rune" />
+                                 )}
+                                 <div className="absolute inset-0 scanline-effect rounded-full opacity-20"></div>
                               </div>
-                              <span className="text-[13px] font-display font-bold text-primary uppercase tracking-[0.6em]">{translateTag(buildData?.runes?.primaryTree || '')}</span>
                            </div>
-                           {buildLoading || !buildData?.runes ? (
-                              <div className="h-64 w-full flex flex-col items-center justify-center gap-4">
-                                 <div className="w-12 h-12 bg-white/5 animate-pulse rounded-full"></div>
-                                 <div className="text-white/10 uppercase font-black tracking-widest text-[10px]">Mapeando Caminho Neural...</div>
-                              </div>
-                           ) : renderRuneGrid(buildData.runes.primaryTree, buildData.runes.primarySelections)}
+                           <span className="text-[13px] font-display font-bold text-primary uppercase tracking-[0.6em]">{translateTag(buildData?.runes?.primaryTree || '')}</span>
                         </div>
+                        {buildLoading || !buildData?.runes ? (
+                           <div className="h-64 w-full flex flex-col items-center justify-center gap-4">
+                              <div className="w-12 h-12 bg-white/5 animate-pulse rounded-full"></div>
+                              <div className="text-white/10 uppercase font-black tracking-widest text-[10px]">Mapeando Caminho Neural...</div>
+                           </div>
+                        ) : renderRuneGrid(buildData.runes.primaryTree, buildData.runes.primarySelections)}
+                     </div>
 
-                        <div className="w-full space-y-10 pt-16 border-t border-white/10 relative">
-                           <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-void border border-white/10 rounded-full flex items-center justify-center z-20">
-                              <Plus className="w-4 h-4 text-white/20" />
-                           </div>
-                           <div className="flex flex-col items-center gap-6">
-                              <div className="relative group/rune-sec cursor-pointer">
-                                 <div className="absolute -inset-8 bg-secondary/20 blur-[50px] rounded-full opacity-50"></div>
-                                 <div className="relative w-20 h-20 rounded-full bg-void/90 flex items-center justify-center border-2 border-secondary/30 shadow-glow-amber transform-gpu group-hover/rune-sec:scale-110 transition-all duration-700">
-                                    {buildData?.runes && Array.isArray(runesData) && runesData.find((t: any) => t.key === buildData?.runes.secondaryTree) && (
-                                       <img src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find((t: any) => t.key === buildData?.runes.secondaryTree).icon}`} width={48} height={48} className="w-12 h-12 object-contain z-10" alt="Rune" />
-                                    )}
-                                 </div>
-                              </div>
-                              <span className="text-[13px] font-display font-bold text-secondary uppercase tracking-[0.6em]">{translateTag(buildData?.runes?.secondaryTree || '')}</span>
-                           </div>
-                           {buildData?.runes ? renderRuneGrid(buildData.runes.secondaryTree, buildData.runes.secondarySelections, true) : <div className="h-48 flex items-center justify-center text-white/10 uppercase font-black tracking-widest text-[10px] animate-pulse">Accessing Core...</div>}
+                     <div className="w-full space-y-10 pt-16 border-t border-white/10 relative">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-void border border-white/10 rounded-full flex items-center justify-center z-20">
+                           <Plus className="w-4 h-4 text-white/20" />
                         </div>
+                        <div className="flex flex-col items-center gap-6">
+                           <div className="relative group/rune-sec cursor-pointer">
+                              <div className="absolute -inset-8 bg-secondary/20 blur-[50px] rounded-full opacity-50"></div>
+                              <div className="relative w-20 h-20 rounded-full bg-void/90 flex items-center justify-center border-2 border-secondary/30 shadow-glow-amber transform-gpu group-hover/rune-sec:scale-110 transition-all duration-700">
+                                 {buildData?.runes && Array.isArray(runesData) && runesData.find((t: any) => t.key === buildData?.runes.secondaryTree) && (
+                                    <img src={`https://ddragon.leagueoflegends.com/cdn/img/${runesData.find((t: any) => t.key === buildData?.runes.secondaryTree).icon}`} width={48} height={48} className="w-12 h-12 object-contain z-10" alt="Rune" />
+                                 )}
+                              </div>
+                           </div>
+                           <span className="text-[13px] font-display font-bold text-secondary uppercase tracking-[0.6em]">{translateTag(buildData?.runes?.secondaryTree || '')}</span>
+                        </div>
+                        {buildData?.runes ? renderRuneGrid(buildData.runes.secondaryTree, buildData.runes.secondarySelections, true) : <div className="h-48 flex items-center justify-center text-white/10 uppercase font-black tracking-widest text-[10px] animate-pulse">Accessing Core...</div>}
+                     </div>
 
-                        <div className="w-full space-y-6 pt-12 mt-6 border-t border-white/5 relative">
-                           <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-void border border-white/5 rounded-full flex items-center justify-center z-20">
-                              <Plus className="w-3 h-3 text-white/10" />
-                           </div>
-                           <div className="text-center">
-                              <span className="text-[11px] font-display font-bold text-white/40 uppercase tracking-[0.4em]">Atributos Bônus</span>
-                           </div>
-                           <div className="space-y-4 flex flex-col items-center">
-                              {[
-                                 ['StatModsAdaptiveForceIcon.png', 'StatModsAttackSpeedIcon.png', 'StatModsCDRScalingIcon.png'],
-                                 ['StatModsAdaptiveForceIcon.png', 'StatModsMovementSpeedIcon.png', 'StatModsHealthScalingIcon.png'],
-                                 ['StatModsHealthPlusIcon.png', 'StatModsTenacityIcon.png', 'StatModsHealthScalingIcon.png']
-                              ].map((row, rowIdx) => (
-                                 <div key={rowIdx} className="flex justify-center gap-4">
-                                    {row.map((icon, optIdx) => {
-                                       const isSelected = buildData?.runes?.shards && buildData?.runes?.shards[rowIdx] === optIdx;
-                                       return (
-                                          <div key={optIdx} className="relative group">
-                                             <div className={`w-8 h-8 rounded-full border-2 transition-all duration-300 flex items-center justify-center p-1 ${isSelected ? 'border-primary bg-primary/20 shadow-[0_0_10px_rgba(34,211,238,0.3)] scale-110' : 'border-transparent opacity-20 hover:opacity-100 grayscale hover:grayscale-0'}`}>
-                                                <img src={`https://ddragon.leagueoflegends.com/cdn/img/perk-images/StatMods/${icon}`} width={32} height={32} className="w-full h-full object-contain" alt="Shard" />
-                                             </div>
+                     <div className="w-full space-y-6 pt-12 mt-6 border-t border-white/5 relative">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-void border border-white/5 rounded-full flex items-center justify-center z-20">
+                           <Plus className="w-3 h-3 text-white/10" />
+                        </div>
+                        <div className="text-center">
+                           <span className="text-[11px] font-display font-bold text-white/40 uppercase tracking-[0.4em]">Atributos Bônus</span>
+                        </div>
+                        <div className="space-y-4 flex flex-col items-center">
+                           {[
+                              ['StatModsAdaptiveForceIcon.png', 'StatModsAttackSpeedIcon.png', 'StatModsCDRScalingIcon.png'],
+                              ['StatModsAdaptiveForceIcon.png', 'StatModsMovementSpeedIcon.png', 'StatModsHealthScalingIcon.png'],
+                              ['StatModsHealthPlusIcon.png', 'StatModsTenacityIcon.png', 'StatModsHealthScalingIcon.png']
+                           ].map((row, rowIdx) => (
+                              <div key={rowIdx} className="flex justify-center gap-4">
+                                 {row.map((icon, optIdx) => {
+                                    const isSelected = buildData?.runes?.shards && buildData?.runes?.shards[rowIdx] === optIdx;
+                                    return (
+                                       <div key={optIdx} className="relative group">
+                                          <div className={`w-8 h-8 rounded-full border-2 transition-all duration-300 flex items-center justify-center p-1 ${isSelected ? 'border-primary bg-primary/20 shadow-[0_0_10px_rgba(34,211,238,0.3)] scale-110' : 'border-transparent opacity-20 hover:opacity-100 grayscale hover:grayscale-0'}`}>
+                                             <img src={`https://ddragon.leagueoflegends.com/cdn/img/perk-images/StatMods/${icon}`} width={32} height={32} className="w-full h-full object-contain" alt="Shard" />
                                           </div>
-                                       );
-                                    })}
-                                 </div>
-                              ))}
-                           </div>
+                                       </div>
+                                    );
+                                 })}
+                              </div>
+                           ))}
                         </div>
-                      </div>
-
-                      <div className={`mt-10 p-6 sm:p-7 rounded-3xl border shadow-inner group/wr relative overflow-hidden transition-all duration-1000 ${buildData?.isOffRole ? 'bg-red-950/20 border-red-500/20' : 'bg-void/95 border-white/5'}`}>
-                         <div className={`absolute inset-0 opacity-0 group-hover/wr:opacity-100 transition-opacity duration-1000 ${buildData?.isOffRole ? 'bg-red-500/5' : 'bg-primary/5'}`}></div>
-                         <div className={`text-[10px] font-black uppercase mb-6 tracking-[0.7em] heading-font ${buildData?.isOffRole ? 'text-red-500/60' : 'text-primary/40'}`}>Quociente de Sucesso</div>
-                         <div className={`text-5xl sm:text-6xl font-display font-bold italic tracking-tighter scale-in-center transition-all duration-[1200ms] group-hover:scale-110 ${buildData?.isOffRole ? 'text-red-500 drop-shadow-[0_0_30px_rgba(239,68,68,0.3)] animate-pulse' : 'text-white drop-shadow-glow'}`}>
-                            {formatRate(buildData?.winRate)}
-                            <span className="text-2xl opacity-40">%</span>
-                         </div>
-                      </div>
-
-                      <div className="mt-8 flex items-center justify-center gap-4">
-                           <div className={`w-8 h-[2px] ${buildData?.isOffRole ? 'bg-red-500/50' : 'bg-primary'}`}></div>
-                           <span className={`text-[10px] font-black uppercase tracking-[0.5em] animate-pulse ${buildData?.isOffRole ? 'text-red-500' : 'text-primary'}`}>
-                              {buildData?.isOffRole ? 'Estratégia Adaptada e Instável' : 'Dominando o Meta Local'}
-                           </span>
-                           <div className={`w-8 h-[2px] ${buildData?.isOffRole ? 'bg-red-500/50' : 'bg-primary'}`}></div>
                      </div>
-                  </section>
-                </div>
-             </div>
-          </div>
-       </div>
-    );
- }
+                  </div>
+
+                  <div className={`mt-10 p-6 sm:p-7 rounded-3xl border shadow-inner group/wr relative overflow-hidden transition-all duration-1000 ${buildData?.isOffRole ? 'bg-red-950/20 border-red-500/20' : 'bg-void/95 border-white/5'}`}>
+                     <div className={`absolute inset-0 opacity-0 group-hover/wr:opacity-100 transition-opacity duration-1000 ${buildData?.isOffRole ? 'bg-red-500/5' : 'bg-primary/5'}`}></div>
+                     <div className={`text-[10px] font-black uppercase mb-6 tracking-[0.7em] heading-font ${buildData?.isOffRole ? 'text-red-500/60' : 'text-primary/40'}`}>Quociente de Sucesso</div>
+                     <div className={`text-5xl sm:text-6xl font-display font-bold italic tracking-tighter scale-in-center transition-all duration-[1200ms] group-hover:scale-110 ${buildData?.isOffRole ? 'text-red-500 drop-shadow-[0_0_30px_rgba(239,68,68,0.3)] animate-pulse' : 'text-white drop-shadow-glow'}`}>
+                        {formatRate(buildData?.winRate)}
+                        <span className="text-2xl opacity-40">%</span>
+                     </div>
+                  </div>
+
+                  <div className="mt-8 flex items-center justify-center gap-4">
+                       <div className={`w-8 h-[2px] ${buildData?.isOffRole ? 'bg-red-500/50' : 'bg-primary'}`}></div>
+                       <span className={`text-[10px] font-black uppercase tracking-[0.5em] animate-pulse ${buildData?.isOffRole ? 'text-red-500' : 'text-primary'}`}>
+                          {buildData?.isOffRole ? 'Estratégia Adaptada e Instável' : 'Dominando o Meta Local'}
+                       </span>
+                       <div className={`w-8 h-[2px] ${buildData?.isOffRole ? 'bg-red-500/50' : 'bg-primary'}`}></div>
+                 </div>
+               </section>
+            </div>
+         </div>
+         </div>
+      </div>
+   );
+}

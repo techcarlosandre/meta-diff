@@ -72,7 +72,7 @@ export default function HomePage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-void flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-void flex flex-col items-center justify-center pt-40 md:pt-48">
        <div className="w-12 h-12 border-2 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
        <div className="text-[10px] font-black text-primary uppercase tracking-[0.5em] animate-pulse">Sincronizando Core...</div>
     </div>
