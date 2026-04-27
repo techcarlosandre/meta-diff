@@ -206,9 +206,9 @@ export default function MetaPage() {
                       <h2 className={`text-2xl sm:text-4xl font-black italic tracking-tighter uppercase ${settings.color}`}>
                         RANK {tier === 'S+' ? 'GOD TIER' : tier === 'S' ? 'ELITE' : tier === 'A' ? 'ESTÁVEL' : 'CONTRA-META'}
                       </h2>
-                      <div className="flex items-center gap-4">
-                        <div className={`h-1 flex-1 w-32 rounded-full ${settings.bg} opacity-30`}></div>
-                        <span className="text-[9px] font-black text-muted uppercase tracking-[0.3em] whitespace-nowrap">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <div className={`h-1 flex-1 rounded-full ${settings.bg} opacity-30 hidden sm:block`}></div>
+                        <span className="text-[8px] sm:text-[9px] font-black text-muted uppercase tracking-[0.2em] sm:tracking-[0.3em]">
                           {champs.length} CAMPEÕES IDENTIFICADOS
                         </span>
                       </div>
