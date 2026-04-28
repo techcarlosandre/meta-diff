@@ -24,7 +24,7 @@ export default function HomePage() {
         const [champsRes, sessionRes, leadersRes] = await Promise.all([
           fetch('https://ddragon.leagueoflegends.com/cdn/16.8.1/data/pt_BR/champion.json'),
           supabase.auth.getSession(),
-          supabase.from('leaderboard_yesterday').select('*').limit(5)
+          supabase.from('daily_leaders').select('*').order('rank', { ascending: true }).limit(5)
         ]);
 
         const champsData = await champsRes.json();

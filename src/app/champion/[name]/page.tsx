@@ -163,7 +163,7 @@ export default function ChampionPage() {
    }, [champId]);
 
    useEffect(() => {
-      supabase.auth.getUser().then(({ data: { user } }) => {
+      supabase.auth.getUser().then(({ data: { user } }: { data: { user: any } }) => {
          setUser(user);
          if (user) {
             supabase
@@ -172,7 +172,7 @@ export default function ChampionPage() {
                .eq('user_id', user.id)
                .eq('champion_id', champId)
                .maybeSingle()
-               .then(({ data, error }) => {
+               .then(({ data, error }: { data: any, error: any }) => {
                   if (error) console.warn("Tabela de favoritos não disponível.");
                   setIsFavorite(!!data);
                });

@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-br" className="dark scroll-smooth">
-      <body className={`${montserrat.className} selection:bg-primary/30 text-digital min-h-screen relative overflow-x-hidden bg-void`}>
+      <body suppressHydrationWarning={true} className={`${montserrat.className} selection:bg-primary/30 text-digital min-h-screen relative overflow-x-hidden bg-void`}>
         <UpdateModal />
         <div className="bg-nova pointer-events-none">
           <div className="nova-blob blob-1" />
